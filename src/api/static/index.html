@@ -18,8 +18,8 @@
       --radius: 10px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding: 20px 10px; }
-    .container { max-width: 1100px; margin: 0 auto; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding: 24px 12px; }
+    .container { max-width: 1050px; margin: 0 auto; }
     header { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 18px 24px; border-radius: var(--radius); box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 20px; border-bottom: 3px solid var(--primary); }
     .logo-block { display: flex; align-items: center; gap: 14px; }
     .logo-badge { width: 44px; height: 44px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
@@ -40,33 +40,37 @@
     .card { background: var(--card-bg); padding: 24px; border-radius: var(--radius); box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 20px; border: 1px solid var(--border); }
     .card-title { font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 
-    /* Chips */
-    .chips-title { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .chips-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-    .chip { background: #F1F5F9; border: 1px solid #CBD5E1; color: #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; font-weight: 500; }
-    .chip:hover { background: #E2E8F0; color: #0F172A; border-color: #94A3B8; }
-
     /* Inputs */
-    textarea { width: 100%; height: 90px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; resize: vertical; margin-bottom: 14px; transition: border-color 0.2s; }
+    textarea { width: 100%; height: 110px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 1.02rem; resize: vertical; margin-bottom: 12px; transition: border-color 0.2s; line-height: 1.5; }
     textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 120, 210, 0.15); }
 
-    .btn { background: var(--primary); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-row { display: flex; gap: 10px; align-items: center; }
+    .btn { background: var(--primary); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 0.98rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
     .btn:hover { background: var(--primary-dark); }
     .btn:disabled { background: #94A3B8; cursor: not-allowed; }
+    .btn-secondary { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
+    .btn-secondary:hover { background: #E2E8F0; color: #1E293B; }
+    .btn-sm { padding: 6px 12px; font-size: 0.82rem; }
+
+    .hint-text { font-size: 0.82rem; color: var(--text-muted); margin-left: auto; }
 
     /* Results */
-    .answer-box { background: #F8FAFC; border-left: 4px solid var(--primary); padding: 18px 20px; border-radius: 6px; margin: 16px 0; font-size: 1.05rem; line-height: 1.6; color: #0F172A; white-space: pre-line; }
+    .answer-header { display: flex; justify-content: space-between; align-items: center; }
+    .answer-box { background: #F8FAFC; border-left: 4px solid var(--primary); padding: 18px 20px; border-radius: 6px; margin: 14px 0; font-size: 1.05rem; line-height: 1.6; color: #0F172A; white-space: pre-line; }
     .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
     .meta-card { background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
-    .meta-title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
-    .badge { display: inline-block; background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; border-radius: 5px; padding: 4px 9px; font-size: 0.85rem; font-weight: 600; margin: 2px 4px 2px 0; }
-    .source-badge { display: inline-block; background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; border-radius: 5px; padding: 4px 9px; font-size: 0.82rem; margin: 2px 4px 2px 0; }
+    .meta-title { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge { display: inline-block; background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; border-radius: 5px; padding: 5px 10px; font-size: 0.88rem; font-weight: 600; margin: 3px 6px 3px 0; }
+    .source-badge { display: inline-block; background: #F1F5F9; color: #334155; border: 1px solid #CBD5E1; border-radius: 5px; padding: 5px 10px; font-size: 0.84rem; margin: 3px 6px 3px 0; }
+
+    /* Stats bar */
+    .stats-bar { display: flex; gap: 16px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-muted); }
 
     /* Upload box */
     .upload-zone { border: 2px dashed #CBD5E1; border-radius: 12px; padding: 36px 20px; text-align: center; background: #F8FAFC; cursor: pointer; transition: all 0.2s; margin-bottom: 16px; }
     .upload-zone:hover { border-color: var(--primary); background: #F0F9FF; }
     .upload-icon { font-size: 40px; color: var(--primary); margin-bottom: 8px; }
-    .upload-text { font-size: 1rem; color: #334155; font-weight: 600; }
+    .upload-text { font-size: 1.02rem; color: #334155; font-weight: 600; }
     .upload-sub { font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; }
     input[type="file"] { display: none; }
 
@@ -78,7 +82,7 @@
 
     .loader { display: none; margin-left: 8px; width: 16px; height: 16px; border: 2px solid #fff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .alert-success { background: #ECFDF5; border-left: 4px solid var(--success); color: #065F46; padding: 12px 16px; border-radius: 6px; margin: 14px 0; font-size: 0.92rem; }
+    .alert-success { background: #ECFDF5; border-left: 4px solid var(--success); color: #065F46; padding: 14px 18px; border-radius: 6px; margin: 16px 0; font-size: 0.94rem; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -88,7 +92,7 @@
         <div class="logo-badge">🔷</div>
         <div class="logo-title">
           <h1>ПАО «Газпром нефть» | Корпоративный ИИ-ассистент</h1>
-          <p>Интеллектуальный анализ технической документации и извлечение аббревиатур</p>
+          <p>Интеллектуальный анализ документации ПО и контекстный поиск фактов</p>
         </div>
       </div>
       <div class="status-badge" id="apiStatus">
@@ -110,27 +114,22 @@
     <div id="queryTab" class="tab-content active">
       <div class="card">
         <div class="card-title"><span>🔍</span> Задать вопрос по базе знаний</div>
-        <div class="chips-title">Быстрые эталонные сценарии (нажмите для проверки):</div>
-        <div class="chips-group">
-          <div class="chip" onclick="setQuery('Как в документации eXpress расшифровывается CTS?')">eXpress (CTS)</div>
-          <div class="chip" onclick="setQuery('Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?')">Kaspersky (SNMP)</div>
-          <div class="chip" onclick="setQuery('Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?')">Deckhouse (DKP)</div>
-          <div class="chip" onclick="setQuery('В документации Deckhouse для сервисов NLB указан одинаковый IP-адрес, но VPA не изменяет лимиты. В чем причина?')">Deckhouse (NLB & VPA)</div>
-          <div class="chip" onclick="setQuery('Что означает аббревиатура WAL в СУБД ЛИНТЕР и что означает WAL в Tarantool? Приведи инструкции по восстановлению.')">Омонимы (WAL: ЛИНТЕР vs Tarantool)</div>
-          <div class="chip" onclick="setQuery('Реал мадрид or Барселона ?')">Офф-топик (Футбол)</div>
-        </div>
-
-        <textarea id="queryInput" placeholder="Введите ваш вопрос по документации или поддерживаемым аббревиатурам..."></textarea>
-        <div>
+        <textarea id="queryInput" placeholder="Введите технический вопрос по документации или аббревиатуру (поддерживаются опечатки, кириллица и транслитерация)..."></textarea>
+        <div class="btn-row">
           <button class="btn" id="queryBtn" onclick="sendQuery()">
             <span>Найти ответ</span>
             <div class="loader" id="queryLoader"></div>
           </button>
+          <button class="btn btn-secondary" onclick="clearQuery()">Очистить</button>
+          <span class="hint-text">Подсказка: нажмите <b>Ctrl + Enter</b> для быстрой отправки</span>
         </div>
       </div>
 
       <div class="card" id="resultCard" style="display: none;">
-        <div class="card-title"><span>📋</span> Ответ ассистента</div>
+        <div class="answer-header">
+          <div class="card-title" style="margin-bottom: 0;"><span>📋</span> Ответ ассистента</div>
+          <button class="btn btn-secondary btn-sm" id="copyBtn" onclick="copyAnswer()">Скопировать ответ</button>
+        </div>
         <div class="answer-box" id="answerText"></div>
 
         <div class="meta-grid">
@@ -139,9 +138,16 @@
             <div id="termsList"><span style="color: var(--text-muted); font-size: 0.9rem;">Термины не обнаружены</span></div>
           </div>
           <div class="meta-card">
-            <div class="meta-title">📚 Источники базы знаний (`sources`)</div>
+            <div class="meta-title">📚 Первоисточники базы знаний (`sources`)</div>
             <div id="sourcesList"><span style="color: var(--text-muted); font-size: 0.9rem;">Источники не требуются</span></div>
           </div>
+        </div>
+
+        <div class="stats-bar">
+          <span id="statTime">⏱ Время: -</span>
+          <span id="statTerms">📌 Терминов: 0</span>
+          <span id="statSources">📄 Источников: 0</span>
+          <span style="margin-left: auto;">Модель: <b>GigaChat-2-Max</b></span>
         </div>
       </div>
     </div>
@@ -152,13 +158,13 @@
         <div class="card-title"><span>📥</span> Загрузить произвольный PDF-документ</div>
         <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 0.92rem;">
           Обработка выполняется полностью динамически «на лету» без использования заранее подготовленных словарей.
-          Документ сразу регистрируется в оперативной памяти RAG.
+          Извлеченные сокращения и текст документа мгновенно регистрируются в оперативной памяти RAG.
         </p>
 
         <div class="upload-zone" onclick="document.getElementById('pdfFileInput').click()">
           <div class="upload-icon">📄</div>
           <div class="upload-text" id="fileNameLabel">Нажмите для выбора PDF-файла или перетащите его сюда</div>
-          <div class="upload-sub">Поддерживаются файлы PDF размером до 50 МиБ (openapi.yaml)</div>
+          <div class="upload-sub">Поддерживаются файлы PDF размером до 50 МиБ (согласно openapi.yaml)</div>
         </div>
         <input type="file" id="pdfFileInput" accept=".pdf" onchange="onFileSelected(this)">
 
@@ -177,9 +183,9 @@
             <thead>
               <tr>
                 <th style="width: 15%;">Аббревиатура</th>
-                <th style="width: 30%;">Подтвержденная расшифровка</th>
+                <th style="width: 32%;">Подтвержденная расшифровка</th>
                 <th style="width: 10%;">Стр.</th>
-                <th style="width: 45%;">Цитата из документа</th>
+                <th style="width: 43%;">Цитата из документа</th>
               </tr>
             </thead>
             <tbody id="abbrsTableBody"></tbody>
@@ -197,10 +203,17 @@
       btn.classList.add('active');
     }
 
-    function setQuery(text) {
-      document.getElementById('queryInput').value = text;
-      sendQuery();
+    function clearQuery() {
+      document.getElementById('queryInput').value = '';
+      document.getElementById('resultCard').style.display = 'none';
+      document.getElementById('queryInput').focus();
     }
+
+    document.getElementById('queryInput').addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        sendQuery();
+      }
+    });
 
     async function sendQuery() {
       const query = document.getElementById('queryInput').value.trim();
@@ -215,6 +228,7 @@
 
       btn.disabled = true;
       loader.style.display = 'inline-block';
+      const t0 = performance.now();
 
       try {
         const resp = await fetch('/v1/assistant/query', {
@@ -228,6 +242,7 @@
 
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const data = await resp.json();
+        const elapsedSec = ((performance.now() - t0) / 1000).toFixed(2);
 
         resultCard.style.display = 'block';
         answerText.textContent = data.answer;
@@ -235,7 +250,7 @@
         // Термины
         if (data.detected_terms && data.detected_terms.length > 0) {
           termsList.innerHTML = data.detected_terms.map(t => 
-            `<span class="badge">📌 <b>${escapeHtml(t.canonical)}</b>: ${escapeHtml(t.expansion)}</span>`
+            `<span class="badge"><b>${escapeHtml(t.canonical)}</b>: ${escapeHtml(t.expansion)}</span>`
           ).join('');
         } else {
           termsList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.9rem;">Специфических терминов не обнаружено</span>';
@@ -250,6 +265,10 @@
           sourcesList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.9rem;">Источники не требуются (общий ответ / отказ)</span>';
         }
 
+        document.getElementById('statTime').textContent = `⏱ Время: ${elapsedSec} с`;
+        document.getElementById('statTerms').textContent = `📌 Терминов: ${data.detected_terms ? data.detected_terms.length : 0}`;
+        document.getElementById('statSources').textContent = `📄 Источников: ${data.sources ? data.sources.length : 0}`;
+
         resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       } catch (err) {
@@ -258,6 +277,16 @@
         btn.disabled = false;
         loader.style.display = 'none';
       }
+    }
+
+    function copyAnswer() {
+      const text = document.getElementById('answerText').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const orig = btn.textContent;
+        btn.textContent = '✓ Скопировано!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      });
     }
 
     let selectedPdfFile = null;
@@ -295,7 +324,7 @@
         const data = await resp.json();
 
         const abbrs = data.abbreviations || [];
-        banner.textContent = `✅ Документ «${selectedPdfFile.name}» успешно обработан! Извлечено ${abbrs.length} аббревиатур. Текст и термины динамически добавлены в оперативную память RAG. Теперь вы можете задавать вопросы ассистенту по этому файлу!`;
+        banner.innerHTML = `✅ Документ <b>«${escapeHtml(selectedPdfFile.name)}»</b> успешно обработан! Извлечено <b>${abbrs.length}</b> подтвержденных аббревиатур.<br>Текст и термины автоматически зарегистрированы в оперативной памяти RAG. Теперь вы можете задавать вопросы ассистенту по этому документу!`;
         banner.style.display = 'block';
 
         if (abbrs.length > 0) {
