@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Корпоративный AI-Ассистент | База знаний и аббревиатуры</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230078D2'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Корпоративный AI-Ассистент</h1>
+          <p class="brand-subtitle">Поиск по документации и динамический анализ аббревиатур</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div id="health-status" class="status-pill">
+          <span class="status-dot"></span>
+          <span id="health-text">Проверка сервиса...</span>
+        </div>
+        <a href="/docs" target="_blank" class="docs-link" title="Открыть интерактивную документацию OpenAPI Swagger">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          Swagger API
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="query">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        Вопрос ассистенту
+      </button>
+      <button class="tab-btn" data-tab="upload">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Загрузка и анализ PDF
+      </button>
+    </nav>
+
+    <!-- Tab 1: Query Assistant -->
+    <section id="tab-query" class="tab-panel active">
+      <div class="card">
+        <h2 class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Задайте вопрос по корпоративной базе знаний
+        </h2>
+        <p class="card-desc">
+          Ассистент автоматически распознает контекст продуктов, расшифровывает омонимы и цитирует первоисточники со страницами.
+        </p>
+
+        <div class="query-form">
+          <div class="input-wrapper">
+            <textarea
+              id="query-input"
+              class="query-textarea"
+              placeholder="Введите ваш вопрос по продуктам, регламентам или техническим терминам..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-toolbar">
+            <span class="form-hints">Нажмите <strong>Ctrl + Enter</strong> для быстрой отправки</span>
+            <div class="btn-group">
+              <button id="query-clear-btn" type="button" class="btn btn-secondary">
+                Очистить
+              </button>
+              <button id="query-submit-btn" type="button" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                Отправить запрос
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="query-alert" class="alert"></div>
+
+        <!-- Query Loading Indicator -->
+        <div id="query-loading" class="loading-box">
+          <div class="spinner"></div>
+          <p class="loading-text">Анализируем базу знаний и формируем ответ...</p>
+        </div>
+
+        <!-- Query Result -->
+        <div id="query-result" class="result-section">
+          <!-- Answer Card -->
+          <div class="answer-card">
+            <div class="answer-header">
+              <span class="answer-badge">Ответ ассистента</span>
+              <button id="copy-answer-btn" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Копировать
+              </button>
+            </div>
+            <div id="answer-text" class="answer-body"></div>
+          </div>
+
+          <!-- Detected Terms -->
+          <div class="card terms-card" style="padding: 1.25rem;">
+            <h3 class="card-title" style="font-size: 0.95rem; margin-bottom: 0.75rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+              </svg>
+              Распознанные термины и аббревиатуры (detected_terms):
+            </h3>
+            <div id="detected-terms-list" class="terms-grid"></div>
+          </div>
+
+          <!-- Sources -->
+          <div id="sources-section" class="card sources-card" style="padding: 1.25rem;">
+            <h3 class="card-title" style="font-size: 0.95rem; margin-bottom: 0.75rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              Первоисточники документации (sources):
+            </h3>
+            <div id="sources-list" class="sources-list"></div>
+          </div>
+
+          <!-- Telemetry Footer -->
+          <div class="telemetry-bar">
+            <span id="telemetry-latency">⏱️ Время ответа: —</span>
+            <span id="telemetry-req-id">ID: —</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 2: Upload and Extract PDF -->
+    <section id="tab-upload" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <line x1="9" y1="15" x2="15" y2="15"></line>
+          </svg>
+          Загрузка и динамический анализ PDF-документа
+        </h2>
+        <p class="card-desc">
+          Извлечение терминов алгоритмом Schwartz-Hearst и табличным парсером по контракту <code>POST /v1/abbreviations/extract</code>. Документ мгновенно регистрируется в оперативной памяти RAG для ответов на вопросы.
+        </p>
+
+        <!-- Drop Zone -->
+        <div id="drop-zone" class="drop-zone">
+          <input type="file" id="file-input" class="file-input" accept=".pdf,application/pdf">
+          <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <div class="drop-title">Перетащите PDF-файл сюда или кликните для выбора</div>
+          <div class="drop-desc">Поддерживаются любые PDF-файлы технической документации объемом до 50 МиБ</div>
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('file-input').click();">
+            Обзор файлов
+          </button>
+        </div>
+
+        <!-- Selected File Banner -->
+        <div id="selected-file-info" class="selected-file-info">
+          <div class="file-details">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span id="selected-file-name">filename.pdf</span>
+            <span id="selected-file-size" class="file-size">(0 КБ)</span>
+          </div>
+          <div class="btn-group">
+            <button id="remove-file-btn" type="button" class="btn btn-secondary" style="padding: 0.35rem 0.65rem;">
+              Отменить
+            </button>
+            <button id="upload-btn" type="button" class="btn btn-primary" disabled>
+              Извлечь и индексировать
+            </button>
+          </div>
+        </div>
+
+        <!-- Upload Alerts -->
+        <div id="upload-alert" class="alert" style="margin-top: 1rem;"></div>
+        <div id="upload-success" class="alert alert-success" style="margin-top: 1rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span id="upload-success-msg"></span>
+        </div>
+
+        <!-- Upload Loading -->
+        <div id="upload-loading" class="loading-box">
+          <div class="spinner"></div>
+          <p class="loading-text">Парсинг PDF, извлечение аббревиатур и обновление RAG-индекса...</p>
+        </div>
+
+        <!-- Extracted Results Table -->
+        <div id="extracted-section" class="result-section" style="margin-top: 1.5rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <h3 class="card-title" style="font-size: 1.05rem; margin: 0;">Извлеченные аббревиатуры</h3>
+              <span id="extracted-count" class="answer-badge">Найдено: 0</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <input
+                id="table-filter-input"
+                type="text"
+                placeholder="Фильтр по термину..."
+                style="padding: 0.4rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem;"
+              >
+              <button id="ask-about-doc-btn" type="button" class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">
+                Задать вопрос по документу →
+              </button>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 15%;">Термин</th>
+                  <th style="width: 35%;">Расшифровка</th>
+                  <th style="width: 15%;">Страницы</th>
+                  <th style="width: 35%;">Цитата из текста</th>
+                </tr>
+              </thead>
+              <tbody id="extracted-tbody">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <p>Корпоративный AI-Ассистент • Cloud.ru Foundation Models (GigaChat-2-Max) • FastAPI ASGI</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

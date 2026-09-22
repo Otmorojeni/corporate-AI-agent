@@ -5,12 +5,15 @@
 
 from pathlib import Path
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.routes import router
+from src.config import BASE_DIR
 
-STATIC_DIR = Path(__file__).resolve().parent / "static"
-INDEX_HTML = STATIC_DIR / "index.html"
+UI_DIR = BASE_DIR / "ui"
+INDEX_HTML = UI_DIR / "index.html"
+STYLE_CSS = UI_DIR / "style.css"
+APP_JS = UI_DIR / "app.js"
 
 app = FastAPI(
     title="Corporate Abbreviation Assistant API",
@@ -41,3 +44,20 @@ async def serve_ui():
         return HTMLResponse(content=INDEX_HTML.read_text(encoding="utf-8"))
     return HTMLResponse(content="<h1>Корпоративный ассистент активен. Откройте /docs</h1>")
 
+
+@app.get("/style.css", include_in_schema=False)
+@app.get("/ui/style.css", include_in_schema=False)
+async def serve_css():
+    """Стили оформления для веб-интерфейса."""
+    if STYLE_CSS.exists():
+        return FileResponse(STYLE_CSS, media_type="text/css")
+    return Response(status_code=404)
+
+
+@app.get("/app.js", include_in_schema=False)
+@app.get("/ui/app.js", include_in_schema=False)
+async def serve_js():
+    """Клиентский JavaScript для веб-интерфейса."""
+    if APP_JS.exists():
+        return FileResponse(APP_JS, media_type="application/javascript")
+    return Response(status_code=404)

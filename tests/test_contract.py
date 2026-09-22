@@ -185,6 +185,33 @@ def test_dynamic_pdf_workflow():
     assert filename in doc_ids
 
 
+def test_ui_endpoints():
+    """Проверка доступности веб-интерфейса и чистоты схемы OpenAPI."""
+    # 1. Проверка корневой страницы и страницы /ui
+    res_root = client.get("/")
+    assert res_root.status_code == 200
+    assert "Корпоративный AI-Ассистент" in res_root.text
+
+    res_ui = client.get("/ui")
+    assert res_ui.status_code == 200
+    assert "Корпоративный AI-Ассистент" in res_ui.text
+
+    # 2. Проверка статических файлов CSS и JS
+    res_css = client.get("/style.css")
+    assert res_css.status_code == 200
+    assert "text/css" in res_css.headers.get("content-type", "")
+
+    res_js = client.get("/app.js")
+    assert res_js.status_code == 200
+    assert "javascript" in res_js.headers.get("content-type", "")
+
+    # 3. Проверка чистоты OpenAPI: в схему включены ТОЛЬКО регламентные методы
+    res_schema = client.get("/openapi.json")
+    assert res_schema.status_code == 200
+    paths = set(res_schema.json().get("paths", {}).keys())
+    assert paths == {"/health", "/v1/abbreviations/extract", "/v1/assistant/query"}
+
+
 if __name__ == "__main__":
     tests = [
         test_health_endpoint,
@@ -196,6 +223,7 @@ if __name__ == "__main__":
         test_multi_product_query,
         test_off_topic_query,
         test_dynamic_pdf_workflow,
+        test_ui_endpoints,
     ]
     print(f"Запуск {len(tests)} тестов контракта...")
     for t in tests:
