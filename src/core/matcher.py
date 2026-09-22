@@ -1,7 +1,7 @@
 import json
 import re
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Set
 from rapidfuzz import fuzz
 from src.schemas import DetectedTerm
 from src.config import settings
@@ -15,9 +15,15 @@ RU_TO_EN_MAP = {
     'Ы': 'Y', 'Э': 'E', 'Ю': 'YU', 'Я': 'YA'
 }
 
+STOP_WORDS = {
+    "И", "В", "С", "А", "О", "К", "У", "НЕ", "НА", "ПО", "ЗА", "ОТ", "ДО", 
+    "ИЗ", "БЕЗ", "ПРИ", "ПРО", "ДЛЯ", "ТО", "ЖЕ", "НО", "ДА", "НИ", "КАК",
+    "ЧТО", "ГДЕ", "КТО", "ГДE", "ИЛИ", "ЕСЛИ", "ПРИ", "ТАК", "ЭТО"
+}
+
+
 def transliterate_acronym(text: str) -> str:
     """Транслитерирует русские буквы в латинские для поиска аббревиатур (ВПА -> VPA, СНМП -> SNMP)."""
-    # Специфические частые подстановки
     custom = {
         'ВПА': 'VPA', 'НЛБ': 'NLB', 'ДКП': 'DKP', 'СНМП': 'SNMP', 
         'СТС': 'CTS', 'ВАЛ': 'WAL', 'УГ': 'UG', 'КЕСС': 'KESS'
@@ -46,8 +52,6 @@ class TermMatcher:
         self.canonical_index = {}
 
         if not self.terms_file.exists():
-            # Если файл еще не создан Участником 1, используем базовые начальные записи
-            self._load_seed_terms()
             return
 
         with open(self.terms_file, "r", encoding="utf-8") as f:
@@ -57,102 +61,94 @@ class TermMatcher:
                     continue
                 try:
                     entry = json.loads(line)
+                    canon = entry.get("canonical", "").strip()
+                    exp = entry.get("expansion", "").strip()
+                    if not canon or not exp or len(canon) < 2 or canon.upper() in STOP_WORDS:
+                        continue
+
                     self.all_terms.append(entry)
                     prod = entry.get("product", "general")
                     self.terms_by_product.setdefault(prod, []).append(entry)
-                    
-                    canon = entry.get("canonical", "").strip().upper()
-                    if canon:
-                        self.canonical_index.setdefault(canon, []).append(entry)
+                    self.canonical_index.setdefault(canon.upper(), []).append(entry)
                 except json.JSONDecodeError:
                     continue
 
-    def _load_seed_terms(self):
-        """Начальные проверенные термины для отладки пайплайна."""
-        seed = [
-            {"canonical": "CTS", "expansion": "Corporate Transport Server", "product": "express"},
-            {"canonical": "SNMP", "expansion": "Simple Network Management Protocol", "product": "kaspersky"},
-            {"canonical": "DKP", "expansion": "Deckhouse Kubernetes Platform", "product": "deckhouse"},
-            {"canonical": "NLB", "expansion": "Network Load Balancer", "product": "deckhouse"},
-            {"canonical": "VPA", "expansion": "Vertical Pod Autoscaler", "product": "deckhouse"},
-            {"canonical": "WAL", "expansion": "Write Access Level", "product": "linter"},
-            {"canonical": "WAL", "expansion": "write ahead log", "product": "tarantool"},
-        ]
-        for entry in seed:
-            self.all_terms.append(entry)
-            prod = entry.get("product", "general")
-            self.terms_by_product.setdefault(prod, []).append(entry)
-            canon = entry.get("canonical", "").strip().upper()
-            self.canonical_index.setdefault(canon, []).append(entry)
-
     def match_terms(self, query: str, detected_products: List[str]) -> List[DetectedTerm]:
         """
-        Находит аббревиатуры в тексте вопроса с учетом опечаток и продуктов.
-        Разрешает омонимы (Disambiguation).
+        Находит аббревиатуры в тексте вопроса с учетом опечаток и контекста продуктов.
+        Разрешает омонимы (например, WAL для Linter vs Tarantool).
         """
-        # Разбиваем запрос на токены (слова без знаков препинания)
         raw_words = re.findall(r"[a-zA-Zа-яА-Я0-9_-]+", query)
-        detected_terms_map: Dict[Tuple[str, str], DetectedTerm] = {}
-
-        # 1. Сначала определяем пул кандидатов: если продукты найдены, приоритет им
-        product_pool = []
-        for p in detected_products:
-            product_pool.extend(self.terms_by_product.get(p, []))
-            
-        # Если продукт не определен, смотрим все термины
-        search_pool = product_pool if product_pool else self.all_terms
-
-        # Собираем формы слов (оригинал + верхний регистр + транслит)
-        word_variants = []
+        
+        # Собираем формы валидных слов-кандидатов (длина >= 2, не стоп-слова)
+        word_candidates = []
         for w in raw_words:
             upper_w = w.upper()
-            trans_w = transliterate_acronym(w)
-            word_variants.append((w, upper_w, trans_w))
-
-        # 2. Ищем совпадения по терминам пула
-        # Для случаев, когда упомянуто несколько продуктов с одинаковым термином (как WAL в Linter и Tarantool)
-        for entry in search_pool:
-            canon = entry.get("canonical", "").strip().upper()
-            expansion = entry.get("expansion", "").strip()
-            if not canon or not expansion:
+            if len(upper_w) < 2 or upper_w in STOP_WORDS:
                 continue
+            trans_w = transliterate_acronym(w)
+            word_candidates.append((w, upper_w, trans_w))
 
-            term_matched = False
-            for orig, upper_w, trans_w in word_variants:
-                # Точное совпадение
-                if upper_w == canon or trans_w == canon:
-                    term_matched = True
-                    break
-                # Нечеткое совпадение с опечатками (для аббревиатур длина >= 3)
-                if len(canon) >= 3:
-                    ratio1 = fuzz.ratio(upper_w, canon)
-                    ratio2 = fuzz.ratio(trans_w, canon)
-                    if max(ratio1, ratio2) >= 85:
+        if not word_candidates:
+            return []
+
+        matched_terms: List[DetectedTerm] = []
+        seen_pairs: Set[Tuple[str, str]] = set()
+
+        # 1. Если продукты определены в вопросе, ищем термины для каждого продукта
+        if detected_products:
+            for prod in detected_products:
+                prod_terms = self.terms_by_product.get(prod, [])
+                # Группируем по канонической форме для выбора лучшей расшифровки
+                terms_by_canon: Dict[str, List[Dict]] = {}
+                for entry in prod_terms:
+                    canon_upper = entry["canonical"].upper()
+                    terms_by_canon.setdefault(canon_upper, []).append(entry)
+
+                for canon_upper, entries in terms_by_canon.items():
+                    term_matched = False
+                    for orig, upper_w, trans_w in word_candidates:
+                        if upper_w == canon_upper or trans_w == canon_upper:
+                            term_matched = True
+                            break
+                        if len(canon_upper) >= 3:
+                            if fuzz.ratio(upper_w, canon_upper) >= 85 or fuzz.ratio(trans_w, canon_upper) >= 85:
+                                term_matched = True
+                                break
+
+                    if term_matched and entries:
+                        # Берем первую (каноническую) словарную запись
+                        best_entry = entries[0]
+                        canon = best_entry["canonical"]
+                        exp = best_entry["expansion"]
+                        pair = (canon, exp)
+                        if pair not in seen_pairs:
+                            seen_pairs.add(pair)
+                            matched_terms.append(DetectedTerm(canonical=canon, expansion=exp))
+
+        # 2. Если термины не найдены через продукты, или продуктов не было:
+        # ищем однозначные совпадения по всей базе
+        if not matched_terms:
+            for canon_upper, entries in self.canonical_index.items():
+                term_matched = False
+                for orig, upper_w, trans_w in word_candidates:
+                    if upper_w == canon_upper or trans_w == canon_upper:
                         term_matched = True
                         break
+                    if len(canon_upper) >= 3:
+                        if fuzz.ratio(upper_w, canon_upper) >= 85 or fuzz.ratio(trans_w, canon_upper) >= 85:
+                            term_matched = True
+                            break
 
-            if term_matched:
-                key = (canon, expansion)
-                if key not in detected_terms_map:
-                    detected_terms_map[key] = DetectedTerm(
-                        canonical=entry.get("canonical"),
-                        expansion=expansion
-                    )
+                if term_matched and entries:
+                    # Если найдено несколько продуктов, выбираем первый
+                    best_entry = entries[0]
+                    canon = best_entry["canonical"]
+                    exp = best_entry["expansion"]
+                    pair = (canon, exp)
+                    if pair not in seen_pairs:
+                        seen_pairs.add(pair)
+                        matched_terms.append(DetectedTerm(canonical=canon, expansion=exp))
 
-        # 3. Дополнительная проверка: если продукт не был в detected_products,
-        # но в вопросе есть уникальная аббревиатура из базы
-        if not detected_terms_map:
-            for canon, entries in self.canonical_index.items():
-                for orig, upper_w, trans_w in word_variants:
-                    if upper_w == canon or trans_w == canon:
-                        for entry in entries:
-                            exp = entry.get("expansion", "")
-                            key = (entry.get("canonical"), exp)
-                            if key not in detected_terms_map:
-                                detected_terms_map[key] = DetectedTerm(
-                                    canonical=entry.get("canonical"),
-                                    expansion=exp
-                                )
-
-        # Ограничение по openapi.yaml: не более 16 терминов
-        return list(detected_terms_map.values())[:16]
+        # Ограничение openapi.yaml: не более 16 терминов
+        return matched_terms[:16]

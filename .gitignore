@@ -17,3 +17,7 @@ env/
 # IDE
 .idea/
 .vscode/
+
+# Large generated RAG cache (can be rebuilt with scripts/02_build_rag_index.py)
+data/chunks_by_product.json
+data/indices/
