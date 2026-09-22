@@ -10,7 +10,7 @@ class Settings:
     # API settings
     API_KEY: str = os.getenv("API_KEY", "")
     BASE_URL: str = os.getenv("BASE_URL", "https://foundation-models.api.cloud.ru/v1")
-    MODEL_NAME: str = os.getenv("MODEL_NAME", "Qwen/Qwen3.6-35B-A3B")
+    MODEL_NAME: str = os.getenv("MODEL_NAME", "GigaChat/GigaChat-2-Max")
 
     # Directories and files
     CORPUS_DIR: Path = Path(os.getenv("CORPUS_DIR", str(BASE_DIR / "corpus")))
