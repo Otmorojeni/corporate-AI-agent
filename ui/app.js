@@ -128,11 +128,11 @@ function renderMarkdown(md) {
 
   // 1. Protect code blocks before general escaping
   const codeBlocks = [];
-  let text = md.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
-    const id = `__CODEBLOCK_${codeBlocks.length}__`;
+  let text = md.replace(/```(?:[a-zA-Z0-9_-]*\r?\n)?([\s\S]*?)```/g, (match, code) => {
+    const id = `XYZCODEBLOCK${codeBlocks.length}XYZ`;
     const escapedCode = escapeHtml(code.trim());
     codeBlocks.push(`<pre class="code-block"><code>${escapedCode}</code></pre>`);
-    return id;
+    return `\n${id}\n`;
   });
 
   // 2. Escape HTML special characters
@@ -145,7 +145,7 @@ function renderMarkdown(md) {
   text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
   text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  text = text.replace(/_([^_]+)_/g, '<em>$1</em>');
+  text = text.replace(/(?<!\w)_([^_]+)_(?!\w)/g, '<em>$1</em>');
 
   // 5. Line by line parsing for headers and lists
   const lines = text.split('\n');
@@ -223,7 +223,7 @@ function renderMarkdown(md) {
     const item = output[j];
     if (item.startsWith('<h') || item.startsWith('<ol') || item.startsWith('</ol>') ||
         item.startsWith('<ul') || item.startsWith('</ul') || item.startsWith('<li>') ||
-        item.startsWith('__CODEBLOCK_')) {
+        item.startsWith('XYZCODEBLOCK')) {
       if (currentP.length > 0) {
         htmlParts.push(`<p class="md-p">${currentP.join('<br>')}</p>`);
         currentP = [];
@@ -247,7 +247,7 @@ function renderMarkdown(md) {
 
   // 7. Restore code blocks
   codeBlocks.forEach((cb, idx) => {
-    finalHtml = finalHtml.replace(`__CODEBLOCK_${idx}__`, cb);
+    finalHtml = finalHtml.replace(`XYZCODEBLOCK${idx}XYZ`, cb);
   });
 
   return finalHtml;
