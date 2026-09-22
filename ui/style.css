@@ -325,7 +325,116 @@ body {
   gap: 0.5rem;
 }
 
+/* Benchmark Quick Suggestions (evaluation__train.xlsx) */
+.benchmark-section {
+  margin-bottom: 1.25rem;
+}
+
+.benchmark-section-header {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.6rem;
+}
+
+.benchmark-section-header svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.65rem;
+}
+
+.benchmark-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: inherit;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.benchmark-card:hover {
+  border-color: var(--primary);
+  background-color: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 120, 210, 0.08);
+}
+
+.benchmark-card:active,
+.benchmark-card.active {
+  border-color: var(--primary);
+  background-color: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(0, 120, 210, 0.2);
+}
+
+.benchmark-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.benchmark-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.badge-express {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.badge-kaspersky {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.badge-deckhouse {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-homonym {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.benchmark-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  font-family: var(--font-mono, monospace);
+}
+
+.benchmark-card-title {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Buttons */
+
 .btn {
   display: inline-flex;
   align-items: center;

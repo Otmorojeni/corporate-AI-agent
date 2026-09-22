@@ -107,7 +107,62 @@
           </div>
         </div>
 
+        <!-- Benchmark Quick Suggestions (evaluation__train.xlsx) -->
+        <div class="benchmark-section">
+          <div class="benchmark-section-header">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span>Тестовые сценарии (evaluation__train.xlsx):</span>
+          </div>
+          <div class="benchmark-grid">
+            <button type="button" class="benchmark-card" data-query="Как в документации eXpress расшифровывается CTS?" title="Как в документации eXpress расшифровывается CTS?">
+              <div class="benchmark-card-top">
+                <span class="benchmark-badge badge-express">eXpress</span>
+                <span class="benchmark-tag">CTS</span>
+              </div>
+              <div class="benchmark-card-title">Расшифровка термина CTS</div>
+            </button>
+
+            <button type="button" class="benchmark-card" data-query="Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?" title="Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?">
+              <div class="benchmark-card-top">
+                <span class="benchmark-badge badge-kaspersky">Kaspersky</span>
+                <span class="benchmark-tag">SNMP</span>
+              </div>
+              <div class="benchmark-card-title">Установка службы SNMP в KESS</div>
+            </button>
+
+            <button type="button" class="benchmark-card" data-query="Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?" title="Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?">
+              <div class="benchmark-card-top">
+                <span class="benchmark-badge badge-deckhouse">Deckhouse</span>
+                <span class="benchmark-tag">DKP</span>
+              </div>
+              <div class="benchmark-card-title">Аутентификация в DKP</div>
+            </button>
+
+            <button type="button" class="benchmark-card" data-query="В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?" title="В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?">
+              <div class="benchmark-card-top">
+                <span class="benchmark-badge badge-deckhouse">Deckhouse</span>
+                <span class="benchmark-tag">NLB + VPA</span>
+              </div>
+              <div class="benchmark-card-title">Общий адрес NLB и лимиты VPA</div>
+            </button>
+
+            <button type="button" class="benchmark-card" data-query="Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?" title="Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?">
+              <div class="benchmark-card-top">
+                <span class="benchmark-badge badge-homonym">Омонимы</span>
+                <span class="benchmark-tag">WAL</span>
+              </div>
+              <div class="benchmark-card-title">WAL в ЛИНТЕР vs Tarantool</div>
+            </button>
+          </div>
+        </div>
+
         <div id="query-alert" class="alert"></div>
+
 
         <!-- Query Loading Indicator -->
         <div id="query-loading" class="loading-box">
