@@ -110,6 +110,11 @@ class TermMatcher:
             if not canon or not exp or len(canon) < 2 or canon.upper() in STOP_WORDS:
                 continue
 
+            # Дедупликация: предотвращаем повторное добавление идентичных терминов
+            existing_entries = self.canonical_index.get(canon.upper(), [])
+            if any(e.get("expansion", "").strip().lower() == exp.lower() and e.get("product") == product for e in existing_entries):
+                continue
+
             entry = {
                 "canonical": canon,
                 "expansion": exp,

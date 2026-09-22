@@ -102,42 +102,47 @@ class DocumentRetriever:
         разбивает на чанки и мгновенно переиндексирует BM25 без перезапуска сервиса.
         Возвращает количество добавленных чанков.
         """
+        doc = None
+        new_chunks: List[Dict] = []
         try:
             doc = pymupdf.open(stream=content, filetype="pdf")
+            for page_idx in range(len(doc)):
+                page_num = page_idx + 1
+                raw_text = doc[page_idx].get_text("text")
+                if not raw_text:
+                    continue
+                lines = [l.strip() for l in raw_text.split("\n") if l.strip()]
+                cleaned = "\n".join(lines)
+                if len(cleaned) < 40:
+                    continue
+
+                if len(cleaned) > 2500:
+                    mid = len(cleaned) // 2
+                    split_pos = cleaned.find("\n", mid)
+                    if split_pos == -1:
+                        split_pos = mid
+                    p1 = cleaned[:split_pos].strip()
+                    p2 = cleaned[split_pos:].strip()
+                    if len(p1) >= 40:
+                        new_chunks.append({"document_id": rel_doc_id, "page": page_num, "text": p1})
+                    if len(p2) >= 40:
+                        new_chunks.append({"document_id": rel_doc_id, "page": page_num, "text": p2})
+                else:
+                    new_chunks.append({"document_id": rel_doc_id, "page": page_num, "text": cleaned})
         except Exception as e:
-            logger.warning("Failed to open PDF stream for dynamic indexing: %s", e)
+            logger.warning("Failed to open or parse PDF stream for dynamic indexing: %s", e)
             return 0
-
-        prod_key = product or Path(filename).stem.lower()
-        rel_doc_id = filename
-
-        new_chunks: List[Dict] = []
-        for page_idx in range(len(doc)):
-            page_num = page_idx + 1
-            raw_text = doc[page_idx].get_text("text")
-            if not raw_text:
-                continue
-            lines = [l.strip() for l in raw_text.split("\n") if l.strip()]
-            cleaned = "\n".join(lines)
-            if len(cleaned) < 40:
-                continue
-
-            if len(cleaned) > 2500:
-                mid = len(cleaned) // 2
-                split_pos = cleaned.find("\n", mid)
-                if split_pos == -1:
-                    split_pos = mid
-                p1 = cleaned[:split_pos].strip()
-                p2 = cleaned[split_pos:].strip()
-                if len(p1) >= 40:
-                    new_chunks.append({"document_id": rel_doc_id, "page": page_num, "text": p1})
-                if len(p2) >= 40:
-                    new_chunks.append({"document_id": rel_doc_id, "page": page_num, "text": p2})
-            else:
-                new_chunks.append({"document_id": rel_doc_id, "page": page_num, "text": cleaned})
+        finally:
+            if doc is not None:
+                doc.close()
 
         if not new_chunks:
             return 0
+
+        # Защита от утечки памяти: удаляем предыдущие чанки этого же файла при повторной загрузке
+        self.all_chunks = [c for c in self.all_chunks if c.get("document_id") != rel_doc_id]
+        if prod_key in self.chunks_by_product:
+            self.chunks_by_product[prod_key] = [c for c in self.chunks_by_product[prod_key] if c.get("document_id") != rel_doc_id]
 
         # Добавляем в общий список чанков и продуктовый список
         self.all_chunks.extend(new_chunks)
