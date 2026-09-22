@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Корпоративный AI-Ассистент | База знаний и аббревиатуры</title>
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230078D2'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
 </head>
 <body>
@@ -116,36 +116,37 @@
             <span>Тестовые сценарии:</span>
           </div>
           <div class="prompt-chips-wrap">
-            <button type="button" class="prompt-chip" data-query="Как в документации eXpress расшифровывается CTS?" title="eXpress: Как в документации eXpress расшифровывается CTS?">
+            <button type="button" class="prompt-chip" onclick="applyPromptChip(this)" data-query="Как в документации eXpress расшифровывается CTS?" title="eXpress: Как в документации eXpress расшифровывается CTS?">
               <span class="chip-dot dot-express"></span>
               <span class="chip-label">eXpress:</span>
               <span class="chip-term">CTS</span>
             </button>
 
-            <button type="button" class="prompt-chip" data-query="Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?" title="Kaspersky: Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?">
+            <button type="button" class="prompt-chip" onclick="applyPromptChip(this)" data-query="Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?" title="Kaspersky: Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?">
               <span class="chip-dot dot-kaspersky"></span>
               <span class="chip-label">Kaspersky:</span>
               <span class="chip-term">SNMP</span>
             </button>
 
-            <button type="button" class="prompt-chip" data-query="Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?" title="Deckhouse: Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?">
+            <button type="button" class="prompt-chip" onclick="applyPromptChip(this)" data-query="Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?" title="Deckhouse: Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?">
               <span class="chip-dot dot-deckhouse"></span>
               <span class="chip-label">Deckhouse:</span>
               <span class="chip-term">DKP</span>
             </button>
 
-            <button type="button" class="prompt-chip" data-query="В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?" title="Deckhouse: В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?">
+            <button type="button" class="prompt-chip" onclick="applyPromptChip(this)" data-query="В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?" title="Deckhouse: В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?">
               <span class="chip-dot dot-deckhouse"></span>
               <span class="chip-label">Deckhouse:</span>
               <span class="chip-term">NLB + VPA</span>
             </button>
 
-            <button type="button" class="prompt-chip" data-query="Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?" title="Омонимы: Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?">
+            <button type="button" class="prompt-chip" onclick="applyPromptChip(this)" data-query="Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?" title="Омонимы: Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?">
               <span class="chip-dot dot-homonym"></span>
               <span class="chip-label">Омонимы:</span>
               <span class="chip-term">WAL (ЛИНТЕР / Tarantool)</span>
             </button>
           </div>
+
         </div>
 
         <div id="query-alert" class="alert"></div>
@@ -317,6 +318,33 @@
     <p>Корпоративный AI-Ассистент • Модель: <strong id="footer-model-name">{{MODEL_NAME}}</strong> • FastAPI ASGI</p>
   </footer>
 
-  <script src="app.js"></script>
+  <script>
+    function applyPromptChip(btn) {
+      if (!btn) return;
+      var query = btn.getAttribute('data-query');
+      if (!query) return;
+
+      document.querySelectorAll('.prompt-chip').forEach(function(c) {
+        c.classList.remove('active');
+      });
+      btn.classList.add('active');
+
+      var input = document.getElementById('query-input');
+      if (input) {
+        input.value = query;
+        input.style.height = 'auto';
+        var newHeight = Math.min(Math.max(input.scrollHeight, 52), 240);
+        input.style.height = newHeight + 'px';
+        input.focus();
+      }
+
+      var submitBtn = document.getElementById('query-submit-btn');
+      if (submitBtn) {
+        submitBtn.click();
+      }
+    }
+  </script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
+

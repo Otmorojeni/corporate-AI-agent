@@ -1,0 +1,318 @@
+{
+  "query_tests": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0,
+    "avg_latency": 5.39,
+    "details": [
+      {
+        "id": "Q01",
+        "category": "Train Benchmark",
+        "desc": "eXpress: расшифровка CTS",
+        "status": "PASS",
+        "latency_sec": 1.61,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q02",
+        "category": "Train Benchmark",
+        "desc": "Kaspersky: предварительная установка службы SNMP",
+        "status": "PASS",
+        "latency_sec": 1.93,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q03",
+        "category": "Train Benchmark",
+        "desc": "Deckhouse: аутентификация в DKP и редирект",
+        "status": "PASS",
+        "latency_sec": 2.11,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q04",
+        "category": "Train Benchmark",
+        "desc": "Deckhouse: совместное использование NLB и VPA",
+        "status": "PASS",
+        "latency_sec": 7.72,
+        "terms_count": 2,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q05",
+        "category": "Train Benchmark",
+        "desc": "Омонимы: разделение контекста WAL (ЛИНТЕР vs Tarantool)",
+        "status": "PASS",
+        "latency_sec": 9.63,
+        "terms_count": 2,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q06",
+        "category": "Vendor Coverage",
+        "desc": "Киберпротект: служба теневого копирования VSS",
+        "status": "PASS",
+        "latency_sec": 9.33,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q07",
+        "category": "Vendor Coverage",
+        "desc": "ROSA: модули аутентификации PAM",
+        "status": "PASS",
+        "latency_sec": 12.07,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q08",
+        "category": "Vendor Coverage",
+        "desc": "Arenadata DB: фреймворк PXF",
+        "status": "PASS",
+        "latency_sec": 10.24,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q09",
+        "category": "Vendor Coverage",
+        "desc": "Postgres Pro: ведение журнала предзаписи WAL",
+        "status": "PASS",
+        "latency_sec": 3.48,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q10",
+        "category": "Vendor Coverage",
+        "desc": "UserGate: функционал NGFW",
+        "status": "PASS",
+        "latency_sec": 7.06,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q11",
+        "category": "Vendor Coverage",
+        "desc": "TrueConf: протокол телефонии SIP",
+        "status": "PASS",
+        "latency_sec": 8.6,
+        "terms_count": 2,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q12",
+        "category": "Vendor Coverage",
+        "desc": "InfoWatch: система предотвращения утечек DLP",
+        "status": "PASS",
+        "latency_sec": 8.09,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q13",
+        "category": "Vendor Coverage",
+        "desc": "МойОфис: комплект разработчика SDK",
+        "status": "PASS",
+        "latency_sec": 5.63,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q14",
+        "category": "Transliteration",
+        "desc": "Транслитерация: русский ввод 'СТС' -> 'CTS'",
+        "status": "PASS",
+        "latency_sec": 3.38,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q15",
+        "category": "Transliteration",
+        "desc": "Транслитерация: русский ввод 'снмп' -> 'SNMP'",
+        "status": "PASS",
+        "latency_sec": 2.66,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q16",
+        "category": "Transliteration",
+        "desc": "Транслитерация: русский ввод 'нлб' -> 'NLB'",
+        "status": "PASS",
+        "latency_sec": 6.15,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q17",
+        "category": "Off-topic Handling",
+        "desc": "Офф-топик: вопрос не по документации (пустые detected_terms и sources)",
+        "status": "PASS",
+        "latency_sec": 1.95,
+        "terms_count": 0,
+        "sources_count": 0,
+        "error": ""
+      },
+      {
+        "id": "Q18",
+        "category": "Security & Grounding",
+        "desc": "Безопасность: отказ выдачи вымышленных паролей",
+        "status": "PASS",
+        "latency_sec": 0.92,
+        "terms_count": 0,
+        "sources_count": 0,
+        "error": ""
+      },
+      {
+        "id": "Q19",
+        "category": "Product / Daemon",
+        "desc": "Запрос без аббревиатур: РОСА и systemd не попадают в detected_terms",
+        "status": "PASS",
+        "latency_sec": 3.69,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q20",
+        "category": "Under-specified Query",
+        "desc": "Недоуточненный запрос: общий вопрос о кластеризации",
+        "status": "PASS",
+        "latency_sec": 1.64,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      }
+    ]
+  },
+  "extract_tests": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "avg_latency": 2.35,
+    "details": [
+      {
+        "id": "E01",
+        "name": "Standard English Bracket Pattern",
+        "desc": "Английские скобки: Advanced Security Architecture (ASA)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.68,
+        "error": ""
+      },
+      {
+        "id": "E02",
+        "name": "Standard Russian Bracket Pattern",
+        "desc": "Русские скобки: Корпоративная Система Управления (КСУ)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.91,
+        "error": ""
+      },
+      {
+        "id": "E03",
+        "name": "Multipage Occurrences",
+        "desc": "Многостраничный документ: фиксация страниц 1 и 2 для UCG",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.84,
+        "error": ""
+      },
+      {
+        "id": "E04",
+        "name": "Glossary Dash Format",
+        "desc": "Глоссарий с тире: ETL — Extract Transform Load",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 2,
+        "latency_sec": 3.01,
+        "error": ""
+      },
+      {
+        "id": "E05",
+        "name": "Two-Line Dictionary Format",
+        "desc": "Двухстрочный глоссарий: KDN / Kubernetes Delivery Network",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 3.05,
+        "error": ""
+      },
+      {
+        "id": "E06",
+        "name": "Noise & Stop Words Rejection",
+        "desc": "Фильтрация шума: общеупотребительные термины HTTP, SQL, API, RAM отсекаются",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 0,
+        "latency_sec": 2.74,
+        "error": ""
+      },
+      {
+        "id": "E07",
+        "name": "Zero Abbreviations Plain Document",
+        "desc": "Документ без сокращений: возврат пустого массива []",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 0,
+        "latency_sec": 2.93,
+        "error": ""
+      },
+      {
+        "id": "E08",
+        "name": "Expansion with Preposition",
+        "desc": "Служебные предлоги: База Данных для Оперативного Учета (БДОУ)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.99,
+        "error": ""
+      },
+      {
+        "id": "E09",
+        "name": "Non-PDF File Validation (HTTP 415)",
+        "desc": "Проверка валидации: отказ не-PDF файла с кодом HTTP 415",
+        "status": "PASS",
+        "status_code": 415,
+        "abbr_count": 0,
+        "latency_sec": 0.0,
+        "error": ""
+      },
+      {
+        "id": "E10",
+        "name": "Oversized File Validation (HTTP 413)",
+        "desc": "Проверка лимита размера: отказ файла > 50 МиБ с кодом HTTP 413",
+        "status": "PASS",
+        "status_code": 413,
+        "abbr_count": 0,
+        "latency_sec": 0.31,
+        "error": ""
+      }
+    ]
+  }
+}

@@ -435,25 +435,36 @@ queryInput.addEventListener('keydown', (e) => {
   }
 });
 
-querySubmitBtn.addEventListener('click', handleQuerySubmit);
+// Expose handleQuerySubmit globally
+window.handleQuerySubmit = handleQuerySubmit;
 
-// Quick Prompt Chips (evaluation__train.xlsx)
-const promptChips = document.querySelectorAll('.prompt-chip');
-promptChips.forEach(chip => {
-  chip.addEventListener('click', () => {
-    const query = chip.dataset.query;
-    if (!query) return;
+function applyPromptChip(chip) {
+  if (!chip) return;
+  const query = chip.getAttribute('data-query') || chip.dataset.query;
+  if (!query) return;
 
-    // Toggle active state
-    promptChips.forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
+  // Toggle active state
+  document.querySelectorAll('.prompt-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
 
-    // Populate input field, resize and submit
+  // Populate input field, resize and submit
+  if (queryInput) {
     queryInput.value = query;
     autoResizeInput();
-    handleQuerySubmit();
-  });
+    queryInput.focus();
+  }
+  handleQuerySubmit();
+}
+window.applyPromptChip = applyPromptChip;
+
+// Delegated click listener on document for prompt chips
+document.addEventListener('click', (e) => {
+  const chip = e.target.closest('.prompt-chip');
+  if (chip) {
+    applyPromptChip(chip);
+  }
 });
+
 
 
 

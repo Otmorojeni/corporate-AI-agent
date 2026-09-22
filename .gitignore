@@ -18,6 +18,8 @@ env/
 .idea/
 .vscode/
 
-# Large generated RAG cache (can be rebuilt with scripts/02_build_rag_index.py)
-data/chunks_by_product.json
+# Raw corpus PDFs (excluded to keep repo lightweight and avoid GitVerse size limits)
+corpus/
+
+# Search index caches (built in RAM at startup)
 data/indices/

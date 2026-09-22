@@ -99,21 +99,36 @@ async def process_user_query(req: AssistantQueryRequest) -> AssistantQueryRespon
     )
 
     # 5. Проверка на off-topic или отказ:
-    # Если в вопросе не было ни продуктов, ни аббревиатур, и модель сообщает, что вопрос вне темы
-    # или не относится к корпоративному ПО, мы не возвращаем случайные фоновые источники
+    # Если в вопросе не было ни продуктов, ни аббревиатур, или запрос касается конфиденциальных данных (пароли, токены),
+    # или модель сообщает об отказе / отсутствии сведений, мы не возвращаем посторонние источники
+    answer_lower = answer.lower()
+    query_lower = query.lower()
+
+    is_refusal_text = (
+        "только на вопросы" in answer_lower
+        or "только по" in answer_lower
+        or "только с вопросами" in answer_lower
+        or "корпоративный ассистент" in answer_lower
+        or "не относится" in answer_lower
+        or "не найдена" in answer_lower
+        or "не удалось найти" in answer_lower
+        or "уточните ваш вопрос" in answer_lower
+        or "уточнив его связь" in answer_lower
+        or "повтори свой вопрос" in answer_lower
+        or "не могу предоставить" in answer_lower
+        or "не могу подсказать" in answer_lower
+        or "не содержит сведений" in answer_lower
+        or "не содержит информации" in answer_lower
+        or "не имею доступа" in answer_lower
+        or "обратитесь к администратору" in answer_lower
+    )
+    is_security_or_credential_query = any(
+        kw in query_lower for kw in ("парол", "токен", "secret", "password", "token", "ключ доступа")
+    )
+
     is_off_topic_or_refusal = (
-        not detected_terms and not products and (
-            "только на вопросы" in answer.lower() or
-            "только по" in answer.lower() or
-            "только с вопросами" in answer.lower() or
-            "корпоративный ассистент" in answer.lower() or
-            "не относится" in answer.lower() or
-            "не найдена" in answer.lower() or
-            "не удалось найти" in answer.lower() or
-            "уточните ваш вопрос" in answer.lower() or
-            "уточнив его связь" in answer.lower() or
-            "повтори свой вопрос" in answer.lower()
-        )
+        (not detected_terms and not products and is_refusal_text)
+        or (is_security_or_credential_query and ("не могу" in answer_lower or "не содержит" in answer_lower or "обратитесь" in answer_lower or not detected_terms))
     )
     if is_off_topic_or_refusal:
         sources = []

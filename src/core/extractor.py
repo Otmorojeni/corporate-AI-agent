@@ -88,42 +88,57 @@ def parse_glossary_line(line: str) -> Optional[Tuple[str, str]]:
 
 def extract_expansion_backward(preceding_text: str, canon: str) -> Optional[str]:
     """
-    Алгоритм обратного пословного выравнивания (Schwartz-Hearst).
+    Алгоритм обратного пословного выравнивания (Schwartz-Hearst с бэктрекингом).
     
     Двигаясь справа налево от скобки, сопоставляет начальные буквы предшествующих слов
-    с символами аббревиатуры canon. Отсекает любой лишний предшествующий текст предложения.
+    с символами аббревиатуры canon. Корректно обрабатывает связующие союзы и предлоги,
+    даже если предлог начинается с той же буквы, что и слово расшифровки.
     """
     words = RE_WORD.findall(preceding_text)
     if not words:
         return None
 
+    # Ограничиваемся последними 20 словами перед скобкой
+    words = words[-20:]
     canon_upper = canon.upper()
-    c_idx = len(canon_upper) - 1
-    matched_words = []
 
-    # Проход справа налево по словам
-    for w in reversed(words):
+    def match_helper(w_idx: int, c_idx: int, matched: List[str]) -> Optional[List[str]]:
         if c_idx < 0:
-            break
+            return matched
+        if w_idx < 0:
+            return None
+
+        w = words[w_idx]
         w_upper = w.upper()
         target_char = canon_upper[c_idx]
+        is_conn = w.lower() in CONNECTOR_WORDS
 
-        if w_upper.startswith(target_char):
-            matched_words.append(w)
-            c_idx -= 1
-        elif w.lower() in CONNECTOR_WORDS:
-            matched_words.append(w)
-        else:
-            if matched_words:
-                break
+        # Вариант 1: Если слово НЕ служебное и начинается с целевой буквы
+        if not is_conn and w_upper.startswith(target_char):
+            res = match_helper(w_idx - 1, c_idx - 1, [w] + matched)
+            if res:
+                return res
 
-    # Все ли буквы аббревиатуры нашли подтверждение
-    if c_idx < 0 and matched_words:
-        matched_words.reverse()
+        # Вариант 2: Если слово служебное (предлог/союз)
+        if is_conn:
+            # 2a: Пропускаем служебное слово (не расходуем букву аббревиатуры)
+            res = match_helper(w_idx - 1, c_idx, [w] + matched)
+            if res:
+                return res
+            # 2b: Сопоставляем как букву (на случай редких сокращений типа DoD)
+            if w_upper.startswith(target_char):
+                res = match_helper(w_idx - 1, c_idx - 1, [w] + matched)
+                if res:
+                    return res
+
+        return None
+
+    matched_words = match_helper(len(words) - 1, len(canon_upper) - 1, [])
+    if matched_words:
         first_word = matched_words[0]
         last_word = matched_words[-1]
 
-        # Быстрый поиск границ подстроки в исходном тексте без компиляции регулярок в цикле
+        # Быстрый поиск границ подстроки в исходном тексте
         first_pos = preceding_text.rfind(first_word)
         if first_pos != -1:
             last_pos = preceding_text.find(last_word, first_pos)
@@ -143,32 +158,46 @@ def extract_expansion_backward(preceding_text: str, canon: str) -> Optional[str]
 
 def extract_expansion_forward(following_text: str, canon: str) -> Optional[str]:
     """
-    Проверяет прямой паттерн: АББР (Расшифровка...)
+    Проверяет прямой паттерн: АББР (Расшифровка...) с поддержкой бэктрекинга.
     """
     words = RE_WORD.findall(following_text)
     if not words:
         return None
 
+    words = words[:20]
     canon_upper = canon.upper()
-    c_idx = 0
-    matched_words = []
 
-    for w in words:
+    def match_fwd(w_idx: int, c_idx: int, matched: List[str]) -> Optional[List[str]]:
         if c_idx >= len(canon_upper):
-            break
+            return matched
+        if w_idx >= len(words):
+            return None
+
+        w = words[w_idx]
         w_upper = w.upper()
         target_char = canon_upper[c_idx]
+        is_conn = w.lower() in CONNECTOR_WORDS
 
-        if w_upper.startswith(target_char):
-            matched_words.append(w)
-            c_idx += 1
-        elif w.lower() in CONNECTOR_WORDS:
-            matched_words.append(w)
-        else:
-            if matched_words:
-                break
+        # Вариант 1: Не служебное слово, начинается с буквы
+        if not is_conn and w_upper.startswith(target_char):
+            res = match_fwd(w_idx + 1, c_idx + 1, matched + [w])
+            if res:
+                return res
 
-    if c_idx == len(canon_upper) and matched_words:
+        # Вариант 2: Служебное слово
+        if is_conn:
+            res = match_fwd(w_idx + 1, c_idx, matched + [w])
+            if res:
+                return res
+            if w_upper.startswith(target_char):
+                res = match_fwd(w_idx + 1, c_idx + 1, matched + [w])
+                if res:
+                    return res
+
+        return None
+
+    matched_words = match_fwd(0, 0, [])
+    if matched_words:
         clean_res = " ".join(matched_words).strip(" .,;:-—–")
         if 3 <= len(clean_res) <= 120:
             return clean_res
@@ -228,33 +257,16 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
         text = page.get_text("text")
         if not text:
             continue
+        text = text.replace("\xa0", " ")
 
-        text_lower = text.lower()
-        is_glossary = any(header in text_lower for header in GLOSSARY_HEADERS)
-
-        # 1. Парсинг табличных глоссариев
-        if is_glossary:
-            glossary_terms = parse_glossary_page(text)
-            for canon, exp, quote in glossary_terms:
-                if canon in STOP_WORDS or len(canon) < 2:
-                    continue
-                found_data.setdefault(canon, {}).setdefault(exp, []).append(
-                    AbbreviationOccurrence(page=page_num, quote=quote[:1000])
-                )
-        else:
-            # На страницах без явного заголовка глоссария также проверяем строки определений
-            for line in text.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                res_line = parse_glossary_line(line)
-                if res_line:
-                    canon, exp = res_line
-                    if canon in STOP_WORDS or len(canon) < 2:
-                        continue
-                    found_data.setdefault(canon, {}).setdefault(exp, []).append(
-                        AbbreviationOccurrence(page=page_num, quote=line[:1000])
-                    )
+        # 1. Парсинг глоссариев и списков определений (однострочные и двухстрочные форматы)
+        glossary_terms = parse_glossary_page(text)
+        for canon, exp, quote in glossary_terms:
+            if canon in STOP_WORDS or len(canon) < 2:
+                continue
+            found_data.setdefault(canon, {}).setdefault(exp, []).append(
+                AbbreviationOccurrence(page=page_num, quote=quote[:1000])
+            )
 
         # 2. Паттерн: ... Расшифровка (АББР)
         for m in RE_BRACKET_ACRONYM.finditer(text):

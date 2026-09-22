@@ -62,7 +62,11 @@ async def get_ui_config():
 async def serve_css():
     """Стили оформления для веб-интерфейса."""
     if STYLE_CSS.exists():
-        return FileResponse(STYLE_CSS, media_type="text/css")
+        return FileResponse(
+            STYLE_CSS,
+            media_type="text/css",
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache"},
+        )
     return Response(status_code=404)
 
 
@@ -71,5 +75,10 @@ async def serve_css():
 async def serve_js():
     """Клиентский JavaScript для веб-интерфейса."""
     if APP_JS.exists():
-        return FileResponse(APP_JS, media_type="application/javascript")
+        return FileResponse(
+            APP_JS,
+            media_type="application/javascript",
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache"},
+        )
     return Response(status_code=404)
+
