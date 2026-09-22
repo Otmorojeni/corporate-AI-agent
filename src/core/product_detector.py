@@ -140,3 +140,19 @@ def detect_products(query: str) -> List[str]:
     # Сортируем по позиции упоминания в вопросе
     matched_positions.sort(key=lambda x: x[0])
     return [p for _, p in matched_positions]
+
+
+def register_dynamic_product(product_name: str) -> None:
+    """
+    Динамически регистрирует новое имя продукта/документа в детекторе.
+    Позволяет при загрузке нового PDF находить его имя в вопросах пользователей.
+    """
+    norm = product_name.strip().lower()
+    if not norm or norm in PRODUCT_PATTERNS:
+        return
+    pattern = re.compile(rf"\b{re.escape(norm)}\b", re.IGNORECASE)
+    PRODUCT_PATTERNS[norm] = [rf"\b{re.escape(norm)}\b"]
+    COMPILED_PATTERNS[norm] = [pattern]
+    if len(norm) >= 4:
+        PRIMARY_PRODUCT_NAMES[norm] = norm
+

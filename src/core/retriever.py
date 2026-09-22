@@ -13,6 +13,7 @@ import logging
 import re
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+import pymupdf
 from rank_bm25 import BM25Okapi
 
 from src.schemas import DetectedTerm
@@ -94,6 +95,78 @@ class DocumentRetriever:
         if self.all_chunks:
             all_tokenized = [tokenize_text(c["text"]) for c in self.all_chunks]
             self.all_bm25 = BM25Okapi(all_tokenized)
+
+    def add_dynamic_document(self, filename: str, content: bytes, product: Optional[str] = None) -> int:
+        """
+        Динамически парсит загруженный PDF-файл в памяти,
+        разбивает на чанки и мгновенно переиндексирует BM25 без перезапуска сервиса.
+        Возвращает количество добавленных чанков.
+        """
+        try:
+            doc = pymupdf.open(stream=content, filetype="pdf")
+        except Exception as e:
+            logger.warning("Failed to open PDF stream for dynamic indexing: %s", e)
+            return 0
+
+        prod_key = product or Path(filename).stem.lower()
+        rel_doc_id = filename
+
+        new_chunks: List[Dict] = []
+        for page_idx in range(len(doc)):
+            page_num = page_idx + 1
+            raw_text = doc[page_idx].get_text("text")
+            if not raw_text:
+                continue
+            lines = [l.strip() for l in raw_text.split("\n") if l.strip()]
+            cleaned = "\n".join(lines)
+            if len(cleaned) < 40:
+                continue
+
+            if len(cleaned) > 2500:
+                mid = len(cleaned) // 2
+                split_pos = cleaned.find("\n", mid)
+                if split_pos == -1:
+                    split_pos = mid
+                p1 = cleaned[:split_pos].strip()
+                p2 = cleaned[split_pos:].strip()
+                if len(p1) >= 40:
+                    new_chunks.append({"document_id": rel_doc_id, "page": page_num, "text": p1})
+                if len(p2) >= 40:
+                    new_chunks.append({"document_id": rel_doc_id, "page": page_num, "text": p2})
+            else:
+                new_chunks.append({"document_id": rel_doc_id, "page": page_num, "text": cleaned})
+
+        if not new_chunks:
+            return 0
+
+        # Добавляем в общий список чанков и продуктовый список
+        self.all_chunks.extend(new_chunks)
+        self.chunks_by_product.setdefault(prod_key, []).extend(new_chunks)
+
+        # Мгновенная переиндексация BM25 для данного продукта
+        prod_tokenized = [t for t in (tokenize_text(c["text"]) for c in self.chunks_by_product[prod_key]) if t]
+        if prod_tokenized and any(len(doc_tokens) > 0 for doc_tokens in prod_tokenized):
+            try:
+                self.bm25_by_product[prod_key] = BM25Okapi(prod_tokenized)
+            except Exception as e:
+                logger.warning("Failed to build product BM25 for '%s': %s", prod_key, e)
+
+        # Мгновенная переиндексация глобального BM25
+        all_tokenized = [t for t in (tokenize_text(c["text"]) for c in self.all_chunks) if t]
+        if all_tokenized and any(len(doc_tokens) > 0 for doc_tokens in all_tokenized):
+            try:
+                self.all_bm25 = BM25Okapi(all_tokenized)
+            except Exception as e:
+                logger.warning("Failed to build global BM25: %s", e)
+
+        logger.info(
+            "Dynamically indexed %d chunks from '%s' under product '%s' (total chunks now: %d)",
+            len(new_chunks),
+            filename,
+            prod_key,
+            len(self.all_chunks),
+        )
+        return len(new_chunks)
 
     def retrieve(
         self,

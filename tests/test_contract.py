@@ -128,6 +128,63 @@ def test_off_topic_query():
     assert len(data["answer"]) > 0
 
 
+def test_dynamic_pdf_workflow():
+    """
+    Проверка чек-поинта: обработка совершенно нового, ранее не существовавшего PDF-файла.
+    1. Загрузка нового PDF через /v1/abbreviations/extract без каких-либо хардкодов.
+    2. Извлечение новой аббревиатуры.
+    3. Автоматическая регистрация в памяти сервиса.
+    4. Успешный ответ на запрос через /v1/assistant/query с цитированием нового документа.
+    """
+    # Создаем тестовый PDF в памяти
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text(
+        (50, 100),
+        "User Guide for Next-Generation Cloud Platform.\n\n"
+        "In this architecture, the central system component is KPM (Knowledge Platform Management).\n"
+        "Knowledge Platform Management (KPM) provides unified enterprise document storage,\n"
+        "distributed data synchronization, and automated cluster administration across all nodes.\n"
+    )
+    pdf_bytes = doc.write()
+    doc.close()
+
+    filename = "unseen_cloud_platform.pdf"
+
+    # Шаг 1: Извлечение аббревиатур из нового файла
+    extract_resp = client.post(
+        "/v1/abbreviations/extract",
+        files={"file": (filename, pdf_bytes, "application/pdf")},
+    )
+    assert extract_resp.status_code == 200, f"Extract failed: {extract_resp.text}"
+    extract_data = extract_resp.json()
+    assert "abbreviations" in extract_data
+    abbrs = {a["canonical"]: a["expansion"] for a in extract_data["abbreviations"]}
+    assert "KPM" in abbrs
+    assert "Knowledge Platform Management" in abbrs["KPM"]
+
+    # Шаг 2: Вопрос ассистенту по новому документу
+    query_resp = client.post(
+        "/v1/assistant/query",
+        json={
+            "request_id": "test-dynamic-req-004",
+            "query": "What is KPM in unseen_cloud_platform and what does it do?",
+        },
+    )
+    assert query_resp.status_code == 200, f"Query failed: {query_resp.text}"
+    query_data = query_resp.json()
+    assert query_data["request_id"] == "test-dynamic-req-004"
+    assert len(query_data["detected_terms"]) >= 1
+    terms = {t["canonical"]: t["expansion"] for t in query_data["detected_terms"]}
+    assert "KPM" in terms
+    assert "Knowledge Platform Management" in terms["KPM"]
+
+    # Проверяем, что источник указывает на загруженный файл
+    assert query_data["sources"] is not None and len(query_data["sources"]) >= 1
+    doc_ids = [s["document_id"] for s in query_data["sources"]]
+    assert filename in doc_ids
+
+
 if __name__ == "__main__":
     tests = [
         test_health_endpoint,
@@ -138,6 +195,7 @@ if __name__ == "__main__":
         test_query_endpoint_structure,
         test_multi_product_query,
         test_off_topic_query,
+        test_dynamic_pdf_workflow,
     ]
     print(f"Запуск {len(tests)} тестов контракта...")
     for t in tests:
@@ -145,3 +203,4 @@ if __name__ == "__main__":
         t()
         print(" OK!")
     print("\nВсе тесты успешно пройдены!")
+

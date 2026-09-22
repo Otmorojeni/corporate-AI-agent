@@ -14,7 +14,7 @@ from typing import Dict, List, Optional, Set, Tuple
 from rapidfuzz import fuzz
 from rapidfuzz.distance import DamerauLevenshtein
 
-from src.schemas import DetectedTerm
+from src.schemas import DetectedTerm, ExtractedAbbreviation
 from src.config import settings
 
 # Предварительно скомпилированная регулярка разбиения на слова
@@ -96,6 +96,30 @@ class TermMatcher:
                     self.canonical_index.setdefault(canon.upper(), []).append(entry)
                 except json.JSONDecodeError:
                     continue
+
+    def add_dynamic_terms(self, extracted: List[ExtractedAbbreviation], product: str = "custom") -> int:
+        """
+        Динамически добавляет извлеченные аббревиатуры в память матчера.
+        Позволяет системе мгновенно отвечать на вопросы по новому загруженному PDF-файлу
+        без перезапуска сервера и без модификации исходных файлов.
+        """
+        added_count = 0
+        for item in extracted:
+            canon = item.canonical.strip()
+            exp = item.expansion.strip()
+            if not canon or not exp or len(canon) < 2 or canon.upper() in STOP_WORDS:
+                continue
+
+            entry = {
+                "canonical": canon,
+                "expansion": exp,
+                "product": product,
+            }
+            self.all_terms.append(entry)
+            self.terms_by_product.setdefault(product, []).append(entry)
+            self.canonical_index.setdefault(canon.upper(), []).append(entry)
+            added_count += 1
+        return added_count
 
     def match_terms(self, query: str, detected_products: List[str]) -> List[DetectedTerm]:
         """

@@ -1,5 +1,6 @@
 import logging
 import time
+from pathlib import Path
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
 from src.schemas import (
     HealthResponse,
@@ -8,7 +9,8 @@ from src.schemas import (
     AssistantQueryResponse,
 )
 from src.core.extractor import extract_abbreviations_from_bytes
-from src.core.pipeline import process_user_query
+from src.core.pipeline import process_user_query, matcher, retriever
+from src.core.product_detector import register_dynamic_product
 
 logger = logging.getLogger("corporate_agent.api")
 
@@ -65,9 +67,18 @@ async def extract_abbreviations(file: UploadFile = File(..., description="PDF-ф
     # 3. Извлечение аббревиатур (HTTP 422 при поврежденном файле)
     try:
         abbreviations = extract_abbreviations_from_bytes(content)
+
+        # Динамическая регистрация в памяти:
+        # Позволяет ассистенту мгновенно отвечать на вопросы по новому PDF
+        # без привязки к обучающему датасету и без перезапуска сервера
+        stem = Path(filename).stem if filename else "custom_doc"
+        matcher.add_dynamic_terms(abbreviations, product=stem)
+        retriever.add_dynamic_document(filename=filename or "custom_doc.pdf", content=content, product=stem)
+        register_dynamic_product(stem)
+
         elapsed_ms = (time.perf_counter() - t0) * 1000
         logger.info(
-            "Extracted %d abbreviations from '%s' (%d bytes) in %.1fms",
+            "Extracted %d abbreviations and dynamically indexed '%s' (%d bytes) in %.1fms",
             len(abbreviations),
             filename,
             len(content),
