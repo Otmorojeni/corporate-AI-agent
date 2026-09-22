@@ -53,4 +53,4 @@ class AssistantQueryResponse(BaseModel):
     request_id: str = Field(..., min_length=1, max_length=128)
     answer: str = Field(..., min_length=1, max_length=12000, description="Содержательный ответ по базе знаний")
     detected_terms: List[DetectedTerm] = Field(default_factory=list, max_length=16)
-    sources: Optional[List[SourceReference]] = Field(default=None, max_length=32)
+    sources: List[SourceReference] = Field(default_factory=list, max_length=32)

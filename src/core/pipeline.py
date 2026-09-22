@@ -123,5 +123,6 @@ async def process_user_query(req: AssistantQueryRequest) -> AssistantQueryRespon
         request_id=req.request_id,
         answer=answer,
         detected_terms=detected_terms,
-        sources=sources if sources else None,
+        sources=sources if sources else [],
     )
+

@@ -39,6 +39,8 @@ def test_query_endpoint_structure():
     term = data["detected_terms"][0]
     assert term["canonical"] == "CTS"
     assert term["expansion"] == "Corporate Transport Server"
+    assert "sources" in data
+    assert isinstance(data["sources"], list)
 
 
 def test_query_validation_error():
@@ -124,8 +126,9 @@ def test_off_topic_query():
     data = response.json()
     assert data["request_id"] == "test-req-offtopic-003"
     assert data["detected_terms"] == []
-    assert data["sources"] is None or data["sources"] == []
+    assert data["sources"] == []
     assert len(data["answer"]) > 0
+
 
 
 def test_dynamic_pdf_workflow():
