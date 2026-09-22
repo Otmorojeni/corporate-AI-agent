@@ -79,28 +79,29 @@
           Ассистент автоматически распознает контекст продуктов, расшифровывает омонимы и цитирует первоисточники со страницами.
         </p>
 
-        <div class="query-form">
-          <div class="input-wrapper">
-            <textarea
-              id="query-input"
-              class="query-textarea"
-              placeholder="Введите ваш вопрос по продуктам, регламентам или техническим терминам..."
-              rows="3"
-            ></textarea>
-          </div>
-
-          <div class="form-toolbar">
-            <span class="form-hints">Нажмите <strong>Ctrl + Enter</strong> для быстрой отправки</span>
-            <div class="btn-group">
-              <button id="query-clear-btn" type="button" class="btn btn-secondary">
+        <!-- Modern Chat Input Box -->
+        <div class="chat-input-box">
+          <textarea
+            id="query-input"
+            class="chat-input-textarea"
+            placeholder="Задайте вопрос по продуктам, регламентам или техническим терминам..."
+            rows="1"
+          ></textarea>
+          <div class="chat-input-footer">
+            <div class="chat-input-hints">
+              <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span>
+              <span class="hint-text">для быстрой отправки</span>
+            </div>
+            <div class="chat-input-actions">
+              <button id="query-clear-btn" type="button" class="btn btn-ghost" title="Очистить поле ввода">
                 Очистить
               </button>
               <button id="query-submit-btn" type="button" class="btn btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <line x1="22" y1="2" x2="11" y2="13"></line>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>
-                Отправить запрос
+                <span>Отправить запрос</span>
               </button>
             </div>
           </div>
@@ -176,9 +177,6 @@
           </svg>
           Загрузка и динамический анализ PDF-документа
         </h2>
-        <p class="card-desc">
-          Извлечение терминов алгоритмом Schwartz-Hearst и табличным парсером по контракту <code>POST /v1/abbreviations/extract</code>. Документ мгновенно регистрируется в оперативной памяти RAG для ответов на вопросы.
-        </p>
 
         <!-- Drop Zone -->
         <div id="drop-zone" class="drop-zone">
@@ -274,7 +272,7 @@
 
   <!-- App Footer -->
   <footer class="app-footer">
-    <p>Корпоративный AI-Ассистент • Cloud.ru Foundation Models (GigaChat-2-Max) • FastAPI ASGI</p>
+    <p>Корпоративный AI-Ассистент • Модель: <strong id="footer-model-name">{{MODEL_NAME}}</strong> • FastAPI ASGI</p>
   </footer>
 
   <script src="app.js"></script>

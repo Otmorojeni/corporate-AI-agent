@@ -205,7 +205,18 @@ def test_ui_endpoints():
     assert res_js.status_code == 200
     assert "javascript" in res_js.headers.get("content-type", "")
 
-    # 3. Проверка чистоты OpenAPI: в схему включены ТОЛЬКО регламентные методы
+    # 3. Проверка динамического отображения модели из переменных окружения
+    from src.config import settings
+    assert settings.MODEL_NAME in res_root.text
+    assert "{{MODEL_NAME}}" not in res_root.text
+
+    # 4. Проверка эндпоинта динамической конфигурации
+    res_cfg = client.get("/ui/config")
+    assert res_cfg.status_code == 200
+    cfg_data = res_cfg.json()
+    assert cfg_data["model_name"] == settings.MODEL_NAME
+
+    # 5. Проверка чистоты OpenAPI: в схему включены ТОЛЬКО регламентные методы
     res_schema = client.get("/openapi.json")
     assert res_schema.status_code == 200
     paths = set(res_schema.json().get("paths", {}).keys())

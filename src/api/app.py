@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.routes import router
-from src.config import BASE_DIR
+from src.config import BASE_DIR, settings
 
 UI_DIR = BASE_DIR / "ui"
 INDEX_HTML = UI_DIR / "index.html"
@@ -41,8 +41,20 @@ app.include_router(router)
 async def serve_ui():
     """Интерактивный веб-интерфейс для демонстрации решения на питчинге."""
     if INDEX_HTML.exists():
-        return HTMLResponse(content=INDEX_HTML.read_text(encoding="utf-8"))
+        content = INDEX_HTML.read_text(encoding="utf-8")
+        # Динамическая подстановка названия модели из переменных окружения
+        content = content.replace("{{MODEL_NAME}}", settings.MODEL_NAME)
+        return HTMLResponse(content=content)
     return HTMLResponse(content="<h1>Корпоративный ассистент активен. Откройте /docs</h1>")
+
+
+@app.get("/ui/config", include_in_schema=False)
+async def get_ui_config():
+    """Динамические параметры окружения LLM для веб-интерфейса."""
+    return {
+        "model_name": settings.MODEL_NAME,
+        "base_url": settings.BASE_URL,
+    }
 
 
 @app.get("/style.css", include_in_schema=False)

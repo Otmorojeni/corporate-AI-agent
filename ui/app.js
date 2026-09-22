@@ -4,6 +4,7 @@
  *   - GET /health
  *   - POST /v1/assistant/query
  *   - POST /v1/abbreviations/extract
+ *   - GET /ui/config (internal dynamic model info)
  */
 
 // Determine API Base URL dynamically
@@ -31,6 +32,7 @@ const sourcesSection = document.getElementById('sources-section');
 const telemetryLatency = document.getElementById('telemetry-latency');
 const telemetryReqId = document.getElementById('telemetry-req-id');
 const copyAnswerBtn = document.getElementById('copy-answer-btn');
+const footerModelName = document.getElementById('footer-model-name');
 
 // Upload Tab Elements
 const dropZone = document.getElementById('drop-zone');
@@ -52,9 +54,10 @@ const askAboutDocBtn = document.getElementById('ask-about-doc-btn');
 
 let currentSelectedFile = null;
 let lastExtractedAbbreviations = [];
+let currentRawAnswer = '';
 
 // ==========================================
-// 1. Service Health Check
+// 1. Service Health & Dynamic Model Config
 // ==========================================
 async function checkHealth() {
   try {
@@ -68,6 +71,23 @@ async function checkHealth() {
   } catch (err) {
     healthStatusEl.className = 'status-pill offline';
     healthTextEl.textContent = 'Сервер недоступен (запустите uvicorn)';
+  }
+}
+
+async function loadModelConfig() {
+  try {
+    const res = await fetch(`${API_BASE}/ui/config`);
+    if (res.ok) {
+      const data = await res.json();
+      if (footerModelName && data.model_name) {
+        footerModelName.textContent = data.model_name;
+      }
+    }
+  } catch (_) {
+    // If not reachable, keep whatever server injected or fallback
+    if (footerModelName && footerModelName.textContent.includes('{{')) {
+      footerModelName.textContent = 'LLM API (.env)';
+    }
   }
 }
 
@@ -90,7 +110,151 @@ function switchTab(tabName) {
 }
 
 // ==========================================
-// 3. Query Assistant (Q&A)
+// 3. Modern Textarea Auto-Resize
+// ==========================================
+function autoResizeInput() {
+  queryInput.style.height = 'auto';
+  const newHeight = Math.min(Math.max(queryInput.scrollHeight, 52), 240);
+  queryInput.style.height = newHeight + 'px';
+}
+
+queryInput.addEventListener('input', autoResizeInput);
+
+// ==========================================
+// 4. Robust Markdown Parser (Zero-dependency & offline-safe)
+// ==========================================
+function renderMarkdown(md) {
+  if (!md) return '';
+
+  // 1. Protect code blocks before general escaping
+  const codeBlocks = [];
+  let text = md.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+    const id = `__CODEBLOCK_${codeBlocks.length}__`;
+    const escapedCode = escapeHtml(code.trim());
+    codeBlocks.push(`<pre class="code-block"><code>${escapedCode}</code></pre>`);
+    return id;
+  });
+
+  // 2. Escape HTML special characters
+  text = escapeHtml(text);
+
+  // 3. Inline code
+  text = text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+  // 4. Bold & Italic
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+  text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  text = text.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+  // 5. Line by line parsing for headers and lists
+  const lines = text.split('\n');
+  const output = [];
+  let inOl = false;
+  let inUl = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const trimmed = rawLine.trim();
+
+    // Headers
+    if (/^####\s+/.test(trimmed)) {
+      if (inOl) { output.push('</ol>'); inOl = false; }
+      if (inUl) { output.push('</ul>'); inUl = false; }
+      output.push(`<h5 class="md-h5">${trimmed.replace(/^####\s+/, '')}</h5>`);
+      continue;
+    }
+    if (/^###\s+/.test(trimmed)) {
+      if (inOl) { output.push('</ol>'); inOl = false; }
+      if (inUl) { output.push('</ul>'); inUl = false; }
+      output.push(`<h4 class="md-h4">${trimmed.replace(/^###\s+/, '')}</h4>`);
+      continue;
+    }
+    if (/^##\s+/.test(trimmed)) {
+      if (inOl) { output.push('</ol>'); inOl = false; }
+      if (inUl) { output.push('</ul>'); inUl = false; }
+      output.push(`<h3 class="md-h3">${trimmed.replace(/^##\s+/, '')}</h3>`);
+      continue;
+    }
+    if (/^#\s+/.test(trimmed)) {
+      if (inOl) { output.push('</ol>'); inOl = false; }
+      if (inUl) { output.push('</ul>'); inUl = false; }
+      output.push(`<h2 class="md-h2">${trimmed.replace(/^#\s+/, '')}</h2>`);
+      continue;
+    }
+
+    // Numbered lists: 1. Item
+    const olMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+    if (olMatch) {
+      if (inUl) { output.push('</ul>'); inUl = false; }
+      if (!inOl) { output.push('<ol class="md-ol">'); inOl = true; }
+      output.push(`<li>${olMatch[2]}</li>`);
+      continue;
+    }
+
+    // Bullet lists: - Item or * Item
+    const ulMatch = trimmed.match(/^[-*]\s+(.*)$/);
+    if (ulMatch) {
+      if (inOl) { output.push('</ol>'); inOl = false; }
+      if (!inUl) { output.push('<ul class="md-ul">'); inUl = true; }
+      output.push(`<li>${ulMatch[1]}</li>`);
+      continue;
+    }
+
+    // Empty line or normal text
+    if (inOl) { output.push('</ol>'); inOl = false; }
+    if (inUl) { output.push('</ul>'); inUl = false; }
+
+    if (trimmed === '') {
+      output.push('');
+    } else {
+      output.push(trimmed);
+    }
+  }
+
+  if (inOl) output.push('</ol>');
+  if (inUl) output.push('</ul>');
+
+  // 6. Group continuous normal lines into paragraphs
+  const htmlParts = [];
+  let currentP = [];
+
+  for (let j = 0; j < output.length; j++) {
+    const item = output[j];
+    if (item.startsWith('<h') || item.startsWith('<ol') || item.startsWith('</ol>') ||
+        item.startsWith('<ul') || item.startsWith('</ul') || item.startsWith('<li>') ||
+        item.startsWith('__CODEBLOCK_')) {
+      if (currentP.length > 0) {
+        htmlParts.push(`<p class="md-p">${currentP.join('<br>')}</p>`);
+        currentP = [];
+      }
+      htmlParts.push(item);
+    } else if (item === '') {
+      if (currentP.length > 0) {
+        htmlParts.push(`<p class="md-p">${currentP.join('<br>')}</p>`);
+        currentP = [];
+      }
+    } else {
+      currentP.push(item);
+    }
+  }
+
+  if (currentP.length > 0) {
+    htmlParts.push(`<p class="md-p">${currentP.join('<br>')}</p>`);
+  }
+
+  let finalHtml = htmlParts.join('\n');
+
+  // 7. Restore code blocks
+  codeBlocks.forEach((cb, idx) => {
+    finalHtml = finalHtml.replace(`__CODEBLOCK_${idx}__`, cb);
+  });
+
+  return finalHtml;
+}
+
+// ==========================================
+// 5. Query Assistant (Q&A)
 // ==========================================
 function showAlert(element, message, type = 'danger') {
   element.className = `alert alert-${type} active`;
@@ -150,8 +314,11 @@ async function handleQuerySubmit() {
 }
 
 function renderQueryResult(data, elapsedSec) {
-  // Answer
-  answerText.textContent = data.answer || 'Ответ не сгенерирован.';
+  // Store raw answer for copy button
+  currentRawAnswer = data.answer || '';
+
+  // Render formatted Markdown in answer card
+  answerText.innerHTML = renderMarkdown(currentRawAnswer || 'Ответ не сгенерирован.');
 
   // Detected Terms
   detectedTermsList.innerHTML = '';
@@ -209,9 +376,9 @@ function renderQueryResult(data, elapsedSec) {
 
 // Copy Answer
 copyAnswerBtn.addEventListener('click', async () => {
-  if (!answerText.textContent) return;
+  if (!currentRawAnswer) return;
   try {
-    await navigator.clipboard.writeText(answerText.textContent);
+    await navigator.clipboard.writeText(currentRawAnswer);
     const originalText = copyAnswerBtn.innerHTML;
     copyAnswerBtn.innerHTML = `
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -230,6 +397,7 @@ copyAnswerBtn.addEventListener('click', async () => {
 // Clear query input and result
 queryClearBtn.addEventListener('click', () => {
   queryInput.value = '';
+  queryInput.style.height = 'auto';
   queryResult.classList.remove('active');
   hideAlert(queryAlert);
   queryInput.focus();
@@ -246,7 +414,7 @@ queryInput.addEventListener('keydown', (e) => {
 querySubmitBtn.addEventListener('click', handleQuerySubmit);
 
 // ==========================================
-// 4. PDF Upload & Extraction
+// 6. PDF Upload & Extraction
 // ==========================================
 function formatFileSize(bytes) {
   if (bytes < 1024) return bytes + ' байт';
@@ -415,6 +583,7 @@ askAboutDocBtn.addEventListener('click', () => {
   if (currentSelectedFile) {
     const docName = currentSelectedFile.name;
     queryInput.value = `Что говорится в документе ${docName} о ... ?`;
+    autoResizeInput();
   }
   switchTab('query');
   queryInput.focus();
@@ -431,7 +600,7 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-// Initial health check
+// Initialization
 checkHealth();
-// Periodically check health every 15s
+loadModelConfig();
 setInterval(checkHealth, 15000);
