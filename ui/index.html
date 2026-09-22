@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Корпоративный AI-Ассистент | База знаний и аббревиатуры</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230078D2'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
 </head>
 <body>
@@ -107,56 +107,43 @@
           </div>
         </div>
 
-        <!-- Benchmark Quick Suggestions (evaluation__train.xlsx) -->
-        <div class="benchmark-section">
-          <div class="benchmark-section-header">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
+        <!-- Quick Benchmark Prompt Chips (evaluation__train.xlsx) -->
+        <div class="prompt-suggestions">
+          <div class="prompt-suggestions-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
-            <span>Тестовые сценарии (evaluation__train.xlsx):</span>
+            <span>Тестовые сценарии:</span>
           </div>
-          <div class="benchmark-grid">
-            <button type="button" class="benchmark-card" data-query="Как в документации eXpress расшифровывается CTS?" title="Как в документации eXpress расшифровывается CTS?">
-              <div class="benchmark-card-top">
-                <span class="benchmark-badge badge-express">eXpress</span>
-                <span class="benchmark-tag">CTS</span>
-              </div>
-              <div class="benchmark-card-title">Расшифровка термина CTS</div>
+          <div class="prompt-chips-wrap">
+            <button type="button" class="prompt-chip" data-query="Как в документации eXpress расшифровывается CTS?" title="eXpress: Как в документации eXpress расшифровывается CTS?">
+              <span class="chip-dot dot-express"></span>
+              <span class="chip-label">eXpress:</span>
+              <span class="chip-term">CTS</span>
             </button>
 
-            <button type="button" class="benchmark-card" data-query="Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?" title="Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?">
-              <div class="benchmark-card-top">
-                <span class="benchmark-badge badge-kaspersky">Kaspersky</span>
-                <span class="benchmark-tag">SNMP</span>
-              </div>
-              <div class="benchmark-card-title">Установка службы SNMP в KESS</div>
+            <button type="button" class="prompt-chip" data-query="Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?" title="Kaspersky: Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?">
+              <span class="chip-dot dot-kaspersky"></span>
+              <span class="chip-label">Kaspersky:</span>
+              <span class="chip-term">SNMP</span>
             </button>
 
-            <button type="button" class="benchmark-card" data-query="Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?" title="Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?">
-              <div class="benchmark-card-top">
-                <span class="benchmark-badge badge-deckhouse">Deckhouse</span>
-                <span class="benchmark-tag">DKP</span>
-              </div>
-              <div class="benchmark-card-title">Аутентификация в DKP</div>
+            <button type="button" class="prompt-chip" data-query="Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?" title="Deckhouse: Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?">
+              <span class="chip-dot dot-deckhouse"></span>
+              <span class="chip-label">Deckhouse:</span>
+              <span class="chip-term">DKP</span>
             </button>
 
-            <button type="button" class="benchmark-card" data-query="В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?" title="В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?">
-              <div class="benchmark-card-top">
-                <span class="benchmark-badge badge-deckhouse">Deckhouse</span>
-                <span class="benchmark-tag">NLB + VPA</span>
-              </div>
-              <div class="benchmark-card-title">Общий адрес NLB и лимиты VPA</div>
+            <button type="button" class="prompt-chip" data-query="В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?" title="Deckhouse: В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?">
+              <span class="chip-dot dot-deckhouse"></span>
+              <span class="chip-label">Deckhouse:</span>
+              <span class="chip-term">NLB + VPA</span>
             </button>
 
-            <button type="button" class="benchmark-card" data-query="Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?" title="Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?">
-              <div class="benchmark-card-top">
-                <span class="benchmark-badge badge-homonym">Омонимы</span>
-                <span class="benchmark-tag">WAL</span>
-              </div>
-              <div class="benchmark-card-title">WAL в ЛИНТЕР vs Tarantool</div>
+            <button type="button" class="prompt-chip" data-query="Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?" title="Омонимы: Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?">
+              <span class="chip-dot dot-homonym"></span>
+              <span class="chip-label">Омонимы:</span>
+              <span class="chip-term">WAL (ЛИНТЕР / Tarantool)</span>
             </button>
           </div>
         </div>

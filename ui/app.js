@@ -417,14 +417,14 @@ queryClearBtn.addEventListener('click', () => {
   queryInput.value = '';
   queryInput.style.height = 'auto';
   queryResult.classList.remove('active');
-  document.querySelectorAll('.benchmark-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.prompt-chip').forEach(c => c.classList.remove('active'));
   hideAlert(queryAlert);
   queryInput.focus();
 });
 
-// Clear benchmark active state on manual editing
+// Clear prompt chip active state on manual editing
 queryInput.addEventListener('input', () => {
-  document.querySelectorAll('.benchmark-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.prompt-chip').forEach(c => c.classList.remove('active'));
 });
 
 // Ctrl+Enter / Cmd+Enter hotkey
@@ -437,16 +437,16 @@ queryInput.addEventListener('keydown', (e) => {
 
 querySubmitBtn.addEventListener('click', handleQuerySubmit);
 
-// Benchmark Quick Suggestions (evaluation__train.xlsx)
-const benchmarkCards = document.querySelectorAll('.benchmark-card');
-benchmarkCards.forEach(card => {
-  card.addEventListener('click', () => {
-    const query = card.dataset.query;
+// Quick Prompt Chips (evaluation__train.xlsx)
+const promptChips = document.querySelectorAll('.prompt-chip');
+promptChips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    const query = chip.dataset.query;
     if (!query) return;
 
     // Toggle active state
-    benchmarkCards.forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
+    promptChips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
 
     // Populate input field, resize and submit
     queryInput.value = query;
@@ -454,6 +454,7 @@ benchmarkCards.forEach(card => {
     handleQuerySubmit();
   });
 });
+
 
 
 // ==========================================
