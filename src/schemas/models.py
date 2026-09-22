@@ -1,3 +1,8 @@
+"""
+Pydantic v2 модели данных API корпоративного ассистента.
+Строго соответствуют спецификации OpenAPI 3.1 (openapi.yaml).
+"""
+
 from typing import List, Optional
 from pydantic import BaseModel, Field, ConfigDict
 

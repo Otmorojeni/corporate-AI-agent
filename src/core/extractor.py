@@ -1,21 +1,32 @@
-import re
-from typing import List, Dict, Tuple, Optional
-import pymupdf  # PyMuPDF
-from src.schemas import ExtractedAbbreviation, AbbreviationOccurrence
+"""
+Модуль автоматического извлечения аббревиатур и их подтвержденных расшифровок из PDF-документов.
+Реализует:
+1. Алгоритм обратного пословного выравнивания (Schwartz-Hearst).
+2. Парсер таблиц глоссариев и списков терминов.
+3. Фильтрацию стоп-слов и нормализацию цитат со страницами.
+"""
 
+import re
+from typing import Dict, List, Optional, Tuple
+import pymupdf
+
+from src.schemas import AbbreviationOccurrence, ExtractedAbbreviation
+
+# Стоп-слова, которые не являются целевыми аббревиатурами
 STOP_WORDS = {
-    "PDF", "HTTP", "HTTPS", "URL", "HTML", "JSON", "XML", "API", "REST", "SQL", 
-    "IEEE", "RFC", "TCP", "UDP", "IP", "DNS", "SSH", "TLS", "SSL", "OS", "ОС", 
+    "PDF", "HTTP", "HTTPS", "URL", "HTML", "JSON", "XML", "API", "REST", "SQL",
+    "IEEE", "RFC", "TCP", "UDP", "IP", "DNS", "SSH", "TLS", "SSL", "OS", "ОС",
     "CPU", "RAM", "GB", "MB", "KB", "ГБ", "МБ", "КБ"
 }
 
-# Стоп-слова, которые могут стоять внутри расшифровки между начальными буквами
+# Служебные слова-связки, допустимые внутри расшифровки между начальными буквами
 CONNECTOR_WORDS = {
     "of", "and", "for", "the", "in", "on", "at", "to", "a", "an", "by", "with",
     "по", "и", "для", "в", "на", "с", "из", "или", "о", "об"
 }
 
-GLOSSARY_HEADERS = [
+# Заголовки разделов с глоссариями и перечнями сокращений
+GLOSSARY_HEADERS = (
     "термины и определения",
     "список сокращений",
     "перечень сокращений",
@@ -23,16 +34,26 @@ GLOSSARY_HEADERS = [
     "глоссарий",
     "термины, определения и сокращения",
     "список терминов",
-]
+)
+
+# Предварительно скомпилированные регулярные выражения (оптимизация производительности)
+RE_WORD = re.compile(r"[a-zA-Zа-яА-Я0-9]+")
+RE_SPACES = re.compile(r"\s+")
+RE_DASH_SPLIT = re.compile(r"[\—\–\-]")
+RE_BRACKET_ACRONYM = re.compile(r"[\(\[\{]\s*([A-ZА-ЯЁ]{2,10})\s*[\)\]\}]")
+RE_ACRONYM_BRACKET = re.compile(r"\b([A-ZА-ЯЁ]{2,10})\s*[\(\[\{]([^\)\]\}]+)[\)\]\}]")
+RE_GLOSSARY_SINGLE = re.compile(r"^[A-ZА-ЯЁ]{2,10}$")
+RE_GLOSSARY_DASH = re.compile(r"^([A-ZА-ЯЁ]{2,10})\s*[\—\–\-]\s*(.+)$")
 
 
 def extract_expansion_backward(preceding_text: str, canon: str) -> Optional[str]:
     """
     Алгоритм обратного пословного выравнивания (Schwartz-Hearst).
-    Ищет в предшествующем тексте слова, начинающиеся на буквы аббревиатуры canon,
-    двигаясь справа налево. Отсекает любой лишний текст предложения.
+    
+    Двигаясь справа налево от скобки, сопоставляет начальные буквы предшествующих слов
+    с символами аббревиатуры canon. Отсекает любой лишний предшествующий текст предложения.
     """
-    words = re.findall(r"[a-zA-Zа-яА-Я0-9]+", preceding_text)
+    words = RE_WORD.findall(preceding_text)
     if not words:
         return None
 
@@ -40,6 +61,7 @@ def extract_expansion_backward(preceding_text: str, canon: str) -> Optional[str]
     c_idx = len(canon_upper) - 1
     matched_words = []
 
+    # Проход справа налево по словам
     for w in reversed(words):
         if c_idx < 0:
             break
@@ -50,37 +72,40 @@ def extract_expansion_backward(preceding_text: str, canon: str) -> Optional[str]
             matched_words.append(w)
             c_idx -= 1
         elif w.lower() in CONNECTOR_WORDS:
-            # Разрешаем служебные слова между буквами аббревиатуры
             matched_words.append(w)
         else:
             if matched_words:
                 break
 
+    # Все ли буквы аббревиатуры нашли подтверждение
     if c_idx < 0 and matched_words:
         matched_words.reverse()
         first_word = matched_words[0]
         last_word = matched_words[-1]
-        
-        # Находим точную подстроку в исходном тексте для сохранения регистра и дефисов
-        pattern = re.escape(first_word) + r"[\s\-_]+.*?" + re.escape(last_word)
-        m = list(re.finditer(pattern, preceding_text, re.IGNORECASE | re.DOTALL))
-        if m:
-            clean_res = re.sub(r"\s+", " ", m[-1].group(0)).strip()
-            # Проверяем разумную длину расшифровки
-            if 3 <= len(clean_res) <= 120:
-                return clean_res
-        clean_res = " ".join(matched_words)
-        if 3 <= len(clean_res) <= 120:
-            return clean_res
+
+        # Быстрый поиск границ подстроки в исходном тексте без компиляции регулярок в цикле
+        first_pos = preceding_text.rfind(first_word)
+        if first_pos != -1:
+            last_pos = preceding_text.find(last_word, first_pos)
+            if last_pos != -1:
+                end_pos = last_pos + len(last_word)
+                raw_substring = preceding_text[first_pos:end_pos]
+                clean_res = RE_SPACES.sub(" ", raw_substring).strip()
+                if 3 <= len(clean_res) <= 120:
+                    return clean_res
+
+        clean_fallback = " ".join(matched_words)
+        if 3 <= len(clean_fallback) <= 120:
+            return clean_fallback
 
     return None
 
 
 def extract_expansion_forward(following_text: str, canon: str) -> Optional[str]:
     """
-    Проверяет паттерн АББР (Расшифровка...)
+    Проверяет прямой паттерн: АББР (Расшифровка...)
     """
-    words = re.findall(r"[a-zA-Zа-яА-Я0-9]+", following_text)
+    words = RE_WORD.findall(following_text)
     if not words:
         return None
 
@@ -104,14 +129,6 @@ def extract_expansion_forward(following_text: str, canon: str) -> Optional[str]:
                 break
 
     if c_idx == len(canon_upper) and matched_words:
-        first_word = matched_words[0]
-        last_word = matched_words[-1]
-        pattern = re.escape(first_word) + r"[\s\-_]+.*?" + re.escape(last_word)
-        m = list(re.finditer(pattern, following_text, re.IGNORECASE | re.DOTALL))
-        if m:
-            clean_res = re.sub(r"\s+", " ", m[0].group(0)).strip()
-            if 3 <= len(clean_res) <= 120:
-                return clean_res
         clean_res = " ".join(matched_words)
         if 3 <= len(clean_res) <= 120:
             return clean_res
@@ -121,27 +138,23 @@ def extract_expansion_forward(following_text: str, canon: str) -> Optional[str]:
 
 def parse_glossary_page(text: str) -> List[Tuple[str, str, str]]:
     """
-    Парсит термины из страниц глоссария / таблиц сокращений.
+    Парсит термины из страниц глоссария и таблиц сокращений.
     Возвращает список кортежей (canonical, expansion, quote).
     """
-    results = []
-    lines = [l.strip() for l in text.split("\n") if l.strip()]
-    i = 0
-    while i < len(lines):
-        line = lines[i]
+    results: List[Tuple[str, str, str]] = []
+    lines = [line.strip() for line in text.split("\n") if line.strip()]
 
+    for i, line in enumerate(lines):
         # 1. Формат: АББР на отдельной строке, следующая строка — расшифровка
-        if re.match(r"^[A-ZА-ЯЁ]{2,10}$", line):
+        if RE_GLOSSARY_SINGLE.match(line):
             canon = line
             if i + 1 < len(lines):
                 next_line = lines[i + 1]
-                # Отсекаем пояснение после тире
-                parts = re.split(r"[\—\–\-]", next_line, maxsplit=1)
-                exp_cand = re.sub(r"\s+", " ", parts[0]).strip()
-                words = re.findall(r"[a-zA-Zа-яА-Я0-9]+", exp_cand)
+                parts = RE_DASH_SPLIT.split(next_line, maxsplit=1)
+                exp_cand = RE_SPACES.sub(" ", parts[0]).strip()
+                words = RE_WORD.findall(exp_cand)
                 letters = "".join(w[0].upper() for w in words if w)
 
-                # Проверяем соответствие букв
                 if letters == canon.upper() or (
                     len(words) >= 2 and sum(1 for c in canon.upper() if c in letters) >= max(2, len(canon) * 0.7)
                 ):
@@ -153,20 +166,20 @@ def parse_glossary_page(text: str) -> List[Tuple[str, str, str]]:
                         results.append((canon, exp_cand, quote))
 
         # 2. Формат: АББР — Расшифровка на одной строке
-        m = re.match(r"^([A-ZА-ЯЁ]{2,10})\s*[\—\–\-]\s*(.+)$", line)
-        if m:
-            canon = m.group(1).strip()
-            rest = m.group(2).strip()
-            parts = re.split(r"[\—\–\-]", rest, maxsplit=1)
-            exp_cand = re.sub(r"\s+", " ", parts[0]).strip()
-            words = re.findall(r"[a-zA-Zа-яА-Я0-9]+", exp_cand)
+        match_dash = RE_GLOSSARY_DASH.match(line)
+        if match_dash:
+            canon = match_dash.group(1).strip()
+            rest = match_dash.group(2).strip()
+            parts = RE_DASH_SPLIT.split(rest, maxsplit=1)
+            exp_cand = RE_SPACES.sub(" ", parts[0]).strip()
+            words = RE_WORD.findall(exp_cand)
             letters = "".join(w[0].upper() for w in words if w)
+
             if letters == canon.upper() or (
                 len(words) >= 2 and sum(1 for c in canon.upper() if c in letters) >= max(2, len(canon) * 0.7)
             ):
                 results.append((canon, exp_cand, line))
 
-        i += 1
     return results
 
 
@@ -175,13 +188,8 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
     Извлекает подтвержденные аббревиатуры из открытого документа PyMuPDF.
     Сохраняет страницу и дословную цитату.
     """
+    # canonical -> {expansion -> list of occurrences}
     found_data: Dict[str, Dict[str, List[AbbreviationOccurrence]]] = {}
-
-    # Регулярки для поиска скобок
-    # 1. ... (АББР)
-    pattern_bracket_acronym = re.compile(r"[\(\[\{]\s*([A-ZА-ЯЁ]{2,10})\s*[\)\]\}]")
-    # 2. АББР (...)
-    pattern_acronym_bracket = re.compile(r"\b([A-ZА-ЯЁ]{2,10})\s*[\(\[\{]([^\)\]\}]+)[\)\]\}]")
 
     for page_idx in range(len(doc)):
         page_num = page_idx + 1
@@ -193,7 +201,7 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
         text_lower = text.lower()
         is_glossary = any(header in text_lower for header in GLOSSARY_HEADERS)
 
-        # 1. Если это страница глоссария, применяем табличный парсер
+        # 1. Парсинг табличных глоссариев
         if is_glossary:
             glossary_terms = parse_glossary_page(text)
             for canon, exp, quote in glossary_terms:
@@ -203,13 +211,12 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
                     AbbreviationOccurrence(page=page_num, quote=quote[:1000])
                 )
 
-        # 2. Паттерн: Расшифровка (АББР)
-        for m in pattern_bracket_acronym.finditer(text):
+        # 2. Паттерн: ... Расшифровка (АББР)
+        for m in RE_BRACKET_ACRONYM.finditer(text):
             canon = m.group(1).strip()
             if canon in STOP_WORDS or len(canon) < 2:
                 continue
 
-            # Берем до 120 символов перед скобкой
             start_pos = max(0, m.start() - 120)
             preceding = text[start_pos:m.start()]
             exp = extract_expansion_backward(preceding, canon)
@@ -217,13 +224,13 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
             if exp:
                 q_start = max(0, m.start() - 60)
                 q_end = min(len(text), m.end() + 60)
-                quote = re.sub(r"\s+", " ", text[q_start:q_end]).strip()
+                quote = RE_SPACES.sub(" ", text[q_start:q_end]).strip()
                 found_data.setdefault(canon, {}).setdefault(exp, []).append(
                     AbbreviationOccurrence(page=page_num, quote=quote[:1000])
                 )
 
-        # 3. Паттерн: АББР (Расшифровка)
-        for m in pattern_acronym_bracket.finditer(text):
+        # 3. Паттерн: АББР (Расшифровка...)
+        for m in RE_ACRONYM_BRACKET.finditer(text):
             canon = m.group(1).strip()
             inside = m.group(2).strip()
             if canon in STOP_WORDS or len(canon) < 2:
@@ -233,22 +240,21 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
             if exp:
                 q_start = max(0, m.start() - 40)
                 q_end = min(len(text), m.end() + 40)
-                quote = re.sub(r"\s+", " ", text[q_start:q_end]).strip()
+                quote = RE_SPACES.sub(" ", text[q_start:q_end]).strip()
                 found_data.setdefault(canon, {}).setdefault(exp, []).append(
                     AbbreviationOccurrence(page=page_num, quote=quote[:1000])
                 )
 
-    # Собираем результат в формате openapi.yaml
+    # Формирование ответа строго по openapi.yaml
     result: List[ExtractedAbbreviation] = []
     for canon, exp_dict in found_data.items():
         for exp, occs in exp_dict.items():
-            # Дедуплицируем цитаты на одной и той же странице
-            unique_occs = []
+            unique_occs: List[AbbreviationOccurrence] = []
             seen_pages = set()
-            for o in occs:
-                if o.page not in seen_pages:
-                    unique_occs.append(o)
-                    seen_pages.add(o.page)
+            for occ in occs:
+                if occ.page not in seen_pages:
+                    unique_occs.append(occ)
+                    seen_pages.add(occ.page)
 
             result.append(
                 ExtractedAbbreviation(
@@ -264,10 +270,16 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
 def extract_abbreviations_from_bytes(file_bytes: bytes) -> List[ExtractedAbbreviation]:
     """Точка входа для эндпоинта POST /v1/abbreviations/extract"""
     doc = pymupdf.open(stream=file_bytes, filetype="pdf")
-    return extract_from_pdf_document(doc)
+    try:
+        return extract_from_pdf_document(doc)
+    finally:
+        doc.close()
 
 
 def extract_abbreviations_from_file(file_path: str) -> List[ExtractedAbbreviation]:
     """Точка входа для офлайн-скрипта генерации словаря"""
     doc = pymupdf.open(file_path)
-    return extract_from_pdf_document(doc)
+    try:
+        return extract_from_pdf_document(doc)
+    finally:
+        doc.close()

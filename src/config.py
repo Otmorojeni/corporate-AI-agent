@@ -1,12 +1,19 @@
+"""
+Конфигурация проекта и управление переменными окружения.
+Загружает переменные из системной среды или .env файла.
+"""
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load .env if present
+# Базовая директория проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+
 class Settings:
+    """Глобальные настройки сервера, путей и подключения к API."""
     # API settings
     API_KEY: str = os.getenv("API_KEY", "")
     BASE_URL: str = os.getenv("BASE_URL", "https://foundation-models.api.cloud.ru/v1")

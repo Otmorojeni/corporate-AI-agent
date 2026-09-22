@@ -1,3 +1,8 @@
+"""
+Главная точка входа ASGI-приложения FastAPI.
+Инициализирует маршрутизацию, CORS и OpenAPI документацию сервиса.
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.routes import router

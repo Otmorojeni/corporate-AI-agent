@@ -1,21 +1,38 @@
 import os
 import asyncio
+import logging
 from typing import List, Dict, Optional
 from openai import AsyncOpenAI
 from src.schemas import DetectedTerm, SourceReference
 from src.config import settings
+
+logger = logging.getLogger("corporate_agent.llm")
 
 
 class LLMClient:
     def __init__(self):
         self.api_key = settings.API_KEY or os.environ.get("API_KEY", "")
         self.base_url = settings.BASE_URL
-        self.model_name = os.environ.get("MODEL_NAME", "GigaChat/GigaChat-2-Max")
-        self.client = AsyncOpenAI(
-            api_key=self.api_key,
-            base_url=self.base_url,
-            timeout=60.0,
-        )
+        self.model_name = settings.MODEL_NAME or os.environ.get("MODEL_NAME", "GigaChat/GigaChat-2-Max")
+        self._client: Optional[AsyncOpenAI] = None
+        self._loop: Optional[asyncio.AbstractEventLoop] = None
+
+    @property
+    def client(self) -> AsyncOpenAI:
+        """Возвращает экземпляр AsyncOpenAI, привязанный к текущему активному event loop."""
+        try:
+            current_loop = asyncio.get_running_loop()
+        except RuntimeError:
+            current_loop = None
+
+        if self._client is None or self._loop != current_loop:
+            self._client = AsyncOpenAI(
+                api_key=self.api_key,
+                base_url=self.base_url,
+                timeout=60.0,
+            )
+            self._loop = current_loop
+        return self._client
 
     def _build_system_prompt(
         self,
@@ -104,6 +121,7 @@ class LLMClient:
 
         except Exception as e:
             # Отказоустойчивый ответ в случае сетевых проблем провайдера
+            logger.warning("LLM request failed: %s. Using deterministic fallback.", e)
             parts = []
             for t in detected_terms:
                 prod = products[0] if products else "документации"
