@@ -102,6 +102,8 @@ class DocumentRetriever:
         разбивает на чанки и мгновенно переиндексирует BM25 без перезапуска сервиса.
         Возвращает количество добавленных чанков.
         """
+        prod_key = product or Path(filename).stem.lower()
+        rel_doc_id = filename
         doc = None
         new_chunks: List[Dict] = []
         try:
