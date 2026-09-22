@@ -68,15 +68,50 @@ COMPILED_PATTERNS = {
     for product, patterns in PRODUCT_PATTERNS.items()
 }
 
+# Канонические названия продуктов для нечеткого поиска опечаток (Damerau-Levenshtein <= 1)
+PRIMARY_PRODUCT_NAMES = {
+    "kaspersky": "kaspersky",
+    "касперский": "kaspersky",
+    "deckhouse": "deckhouse",
+    "декхаус": "deckhouse",
+    "tarantool": "tarantool",
+    "тарантул": "tarantool",
+    "linter": "linter",
+    "линтер": "linter",
+    "литер": "linter",
+    "express": "express",
+    "экспресс": "express",
+    "postgres": "postgres_pro",
+    "постгрес": "postgres_pro",
+    "arenadata": "arenadata_db",
+    "аренадата": "arenadata_db",
+    "cyberprotect": "cyberprotect",
+    "киберпротект": "cyberprotect",
+    "infowatch": "infowatch",
+    "инфовотч": "infowatch",
+    "loginom": "loginom",
+    "логином": "loginom",
+    "trueconf": "trueconf",
+    "труконф": "trueconf",
+    "usergate": "usergate",
+    "юзергейт": "usergate",
+}
+
+RE_PROD_WORD = re.compile(r"[a-zA-Zа-яА-Я0-9_-]+")
+
 
 def detect_products(query: str) -> List[str]:
     """
     Определяет, какие продукты из 17 семейств упомянуты в запросе пользователя.
     Возвращает список идентификаторов продуктов в порядке их появления в тексте.
-    Если продукты не найдены явно, возвращает пустой список.
+    Устойчив к опечаткам в названиях продуктов (eXpres, Kaspersk, Deckhous, Tarantol).
     """
+    from rapidfuzz.distance import DamerauLevenshtein
+
     matched_positions = []
-    
+    seen_products = set()
+
+    # 1. Быстрый поиск по регулярным выражениям
     for product, regex_list in COMPILED_PATTERNS.items():
         first_pos = None
         for r in regex_list:
@@ -87,7 +122,21 @@ def detect_products(query: str) -> List[str]:
                     first_pos = pos
         if first_pos is not None:
             matched_positions.append((first_pos, product))
-            
+            seen_products.add(product)
+
+    # 2. Нечеткий поиск опечаток в названиях продуктов (расстояние Дамерау-Левенштейна <= 1)
+    words = RE_PROD_WORD.finditer(query)
+    for m in words:
+        w = m.group().lower()
+        if len(w) >= 5:
+            for name, prod in PRIMARY_PRODUCT_NAMES.items():
+                if prod not in seen_products:
+                    # Допускаем не более 1 опечатки (вставка, удаление, замена, перестановка)
+                    if DamerauLevenshtein.distance(w, name) <= 1:
+                        matched_positions.append((m.start(), prod))
+                        seen_products.add(prod)
+                        break
+
     # Сортируем по позиции упоминания в вопросе
     matched_positions.sort(key=lambda x: x[0])
     return [p for _, p in matched_positions]

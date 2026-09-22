@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 from rapidfuzz import fuzz
+from rapidfuzz.distance import DamerauLevenshtein
 
 from src.schemas import DetectedTerm
 from src.config import settings
@@ -137,11 +138,17 @@ class TermMatcher:
                             term_matched = True
                             break
 
-                        # Нечеткое сопоставление разрешено ТОЛЬКО для длинных аббревиатур (>= 4 символов),
-                        # чтобы исключить ложные совпадения коротких 3-буквенных слов (например, REAL -> RAL)
+                        # Перестановка соседних символов (transposition: VAP -> VPA, SNPM -> SNMP)
+                        if len(upper_w) == canon_len and (orig_w.isupper() or len(orig_w) >= 3):
+                            if sorted(upper_w) == sorted(canon_upper) or sorted(trans_w) == sorted(canon_upper):
+                                if DamerauLevenshtein.distance(upper_w, canon_upper) <= 1 or DamerauLevenshtein.distance(trans_w, canon_upper) <= 1:
+                                    term_matched = True
+                                    break
+
+                        # Опечатка на 1 символ (расстояние Дамерау-Левенштейна <= 1) для аббревиатур длиной >= 4
                         if canon_len >= 4 and abs(len(upper_w) - canon_len) <= 1:
                             if orig_w.isupper() or len(orig_w) >= 4:
-                                if fuzz.ratio(upper_w, canon_upper) >= 88 or fuzz.ratio(trans_w, canon_upper) >= 88:
+                                if DamerauLevenshtein.distance(upper_w, canon_upper) <= 1 or DamerauLevenshtein.distance(trans_w, canon_upper) <= 1:
                                     term_matched = True
                                     break
 
@@ -156,7 +163,7 @@ class TermMatcher:
 
         # 2. Если продукт не определен в вопросе:
         # Ищем ТОЛЬКО точные совпадения по всей базе канонических форм (включая транслитерацию),
-        # либо если слово в запросе написано ПОЛНОСТЬЮ ЗАГЛАВНЫМИ БУКВАМИ (длина >= 4) с высоким сходством.
+        # либо если слово в запросе написано ПОЛНОСТЬЮ ЗАГЛАВНЫМИ БУКВАМИ (длина >= 4) с расстоянием <= 1.
         # Это категорически предотвращает ложные срабатывания на обычные слова с заглавной буквы
         # (например, "Реал" не будет сопоставляться с "RAL").
         if not matched_terms:
@@ -171,9 +178,9 @@ class TermMatcher:
                         break
 
                     # Нечеткий поиск без указания продукта допустим ТОЛЬКО для слов,
-                    # написанных полностью заглавными буквами (напр. SNMP c опечаткой) и длиной >= 4
+                    # написанных полностью заглавными буквами и длиной >= 4 (расстояние <= 1)
                     if canon_len >= 4 and orig_w.isupper() and abs(len(upper_w) - canon_len) <= 1:
-                        if fuzz.ratio(upper_w, canon_upper) >= 90 or fuzz.ratio(trans_w, canon_upper) >= 90:
+                        if DamerauLevenshtein.distance(upper_w, canon_upper) <= 1 or DamerauLevenshtein.distance(trans_w, canon_upper) <= 1:
                             term_matched = True
                             break
 
