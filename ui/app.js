@@ -201,6 +201,23 @@ function renderMarkdown(md) {
       continue;
     }
 
+    // Horizontal Rule: ---, ***, ___
+    if (/^(\-{3,}|\*{3,}|_{3,})$/.test(trimmed)) {
+      if (inOl) { output.push('</ol>'); inOl = false; }
+      if (inUl) { output.push('</ul>'); inUl = false; }
+      output.push('<hr class="md-hr">');
+      continue;
+    }
+
+    // Blockquotes: > text
+    if (/^>\s+(.*)$/.test(trimmed)) {
+      if (inOl) { output.push('</ol>'); inOl = false; }
+      if (inUl) { output.push('</ul>'); inUl = false; }
+      const quoteText = trimmed.replace(/^>\s+/, '');
+      output.push(`<blockquote class="md-quote">${quoteText}</blockquote>`);
+      continue;
+    }
+
     // Empty line or normal text
     if (inOl) { output.push('</ol>'); inOl = false; }
     if (inUl) { output.push('</ul>'); inUl = false; }
@@ -223,6 +240,7 @@ function renderMarkdown(md) {
     const item = output[j];
     if (item.startsWith('<h') || item.startsWith('<ol') || item.startsWith('</ol>') ||
         item.startsWith('<ul') || item.startsWith('</ul') || item.startsWith('<li>') ||
+        item.startsWith('<hr') || item.startsWith('<blockquote') ||
         item.startsWith('XYZCODEBLOCK')) {
       if (currentP.length > 0) {
         htmlParts.push(`<p class="md-p">${currentP.join('<br>')}</p>`);

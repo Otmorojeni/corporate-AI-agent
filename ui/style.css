@@ -558,6 +558,23 @@ body {
   line-height: 1.5;
 }
 
+.answer-body .md-hr {
+  border: none;
+  border-top: 1.5px solid #d0e3f8;
+  margin: 1.25rem 0;
+  height: 0;
+}
+
+.answer-body .md-quote {
+  border-left: 3px solid var(--primary);
+  padding: 0.45rem 0.9rem;
+  margin: 0.85rem 0;
+  background-color: var(--primary-light);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: #334155;
+  font-style: italic;
+}
+
 /* Detected Terms */
 .terms-card {
   margin-bottom: 1.25rem;
