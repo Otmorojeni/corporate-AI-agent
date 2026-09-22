@@ -113,6 +113,21 @@ def test_multi_product_query():
     assert "WAL" in terms
 
 
+def test_off_topic_query():
+    """Проверка, что офф-топик запрос не порождает ложных терминов и случайных источников."""
+    payload = {
+        "request_id": "test-req-offtopic-003",
+        "query": "Реал мадрид or Барселона ?",
+    }
+    response = client.post("/v1/assistant/query", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["request_id"] == "test-req-offtopic-003"
+    assert data["detected_terms"] == []
+    assert data["sources"] is None or data["sources"] == []
+    assert len(data["answer"]) > 0
+
+
 if __name__ == "__main__":
     tests = [
         test_health_endpoint,
@@ -122,6 +137,7 @@ if __name__ == "__main__":
         test_extract_valid_pdf,
         test_query_endpoint_structure,
         test_multi_product_query,
+        test_off_topic_query,
     ]
     print(f"Запуск {len(tests)} тестов контракта...")
     for t in tests:

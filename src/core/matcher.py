@@ -34,12 +34,13 @@ RU_TO_EN_MAP = {
     "Ы": "Y", "Э": "E", "Ю": "YU", "Я": "YA"
 }
 
-# Стоп-слова и предлоги, исключаемые из поиска аббревиатур
+# Стоп-слова, предлоги и союзы, исключаемые из поиска аббревиатур
 STOP_WORDS = {
     "И", "В", "С", "А", "О", "К", "У", "НЕ", "НА", "ПО", "ЗА", "ОТ", "ДО",
     "ИЗ", "БЕЗ", "ПРИ", "ПРО", "ДЛЯ", "ТО", "ЖЕ", "НО", "ДА", "НИ", "КАК",
     "ЧТО", "ГДЕ", "КТО", "ГДE", "ИЛИ", "ЕСЛИ", "ТАК", "ЭТО", "МНЕ", "ВАМ",
-    "ЕГО", "ИХ", "ЕЕ", "МЫ", "ВЫ", "ОНИ", "ОН", "ОНА", "ОНО"
+    "ЕГО", "ИХ", "ЕЕ", "МЫ", "ВЫ", "ОНИ", "ОН", "ОНА", "ОНО",
+    "OR", "AND", "THE", "IN", "ON", "AT", "TO", "FOR", "OF", "IS", "ARE"
 }
 
 
@@ -130,17 +131,19 @@ class TermMatcher:
                     term_matched = False
                     canon_len = len(canon_upper)
 
-                    for _, upper_w, trans_w in word_candidates:
-                        # Точное совпадение
+                    for orig_w, upper_w, trans_w in word_candidates:
+                        # Точное совпадение (включая транслитерацию)
                         if upper_w == canon_upper or trans_w == canon_upper:
                             term_matched = True
                             break
 
-                        # Быстрый префильтр по длине перед вызовом fuzz.ratio
-                        if canon_len >= 3 and abs(len(upper_w) - canon_len) <= 1:
-                            if fuzz.ratio(upper_w, canon_upper) >= 85 or fuzz.ratio(trans_w, canon_upper) >= 85:
-                                term_matched = True
-                                break
+                        # Нечеткое сопоставление разрешено ТОЛЬКО для длинных аббревиатур (>= 4 символов),
+                        # чтобы исключить ложные совпадения коротких 3-буквенных слов (например, REAL -> RAL)
+                        if canon_len >= 4 and abs(len(upper_w) - canon_len) <= 1:
+                            if orig_w.isupper() or len(orig_w) >= 4:
+                                if fuzz.ratio(upper_w, canon_upper) >= 88 or fuzz.ratio(trans_w, canon_upper) >= 88:
+                                    term_matched = True
+                                    break
 
                     if term_matched and entries:
                         best_entry = entries[0]
@@ -151,20 +154,26 @@ class TermMatcher:
                             seen_pairs.add(pair)
                             matched_terms.append(DetectedTerm(canonical=canon, expansion=exp))
 
-        # 2. Если продукт не определен или термины через продукт не найдены:
-        # проверяем точные и нечеткие совпадения по всей базе канонических форм
+        # 2. Если продукт не определен в вопросе:
+        # Ищем ТОЛЬКО точные совпадения по всей базе канонических форм (включая транслитерацию),
+        # либо если слово в запросе написано ПОЛНОСТЬЮ ЗАГЛАВНЫМИ БУКВАМИ (длина >= 4) с высоким сходством.
+        # Это категорически предотвращает ложные срабатывания на обычные слова с заглавной буквы
+        # (например, "Реал" не будет сопоставляться с "RAL").
         if not matched_terms:
             for canon_upper, entries in self.canonical_index.items():
                 term_matched = False
                 canon_len = len(canon_upper)
 
-                for _, upper_w, trans_w in word_candidates:
+                for orig_w, upper_w, trans_w in word_candidates:
+                    # Точное совпадение
                     if upper_w == canon_upper or trans_w == canon_upper:
                         term_matched = True
                         break
 
-                    if canon_len >= 3 and abs(len(upper_w) - canon_len) <= 1:
-                        if fuzz.ratio(upper_w, canon_upper) >= 85 or fuzz.ratio(trans_w, canon_upper) >= 85:
+                    # Нечеткий поиск без указания продукта допустим ТОЛЬКО для слов,
+                    # написанных полностью заглавными буквами (напр. SNMP c опечаткой) и длиной >= 4
+                    if canon_len >= 4 and orig_w.isupper() and abs(len(upper_w) - canon_len) <= 1:
+                        if fuzz.ratio(upper_w, canon_upper) >= 90 or fuzz.ratio(trans_w, canon_upper) >= 90:
                             term_matched = True
                             break
 

@@ -98,7 +98,27 @@ async def process_user_query(req: AssistantQueryRequest) -> AssistantQueryRespon
         t_llm,
     )
 
-    # 5. Формирование валидного ответа
+    # 5. Проверка на off-topic или отказ:
+    # Если в вопросе не было ни продуктов, ни аббревиатур, и модель сообщает, что вопрос вне темы
+    # или не относится к корпоративному ПО, мы не возвращаем случайные фоновые источники
+    is_off_topic_or_refusal = (
+        not detected_terms and not products and (
+            "только на вопросы" in answer.lower() or
+            "только по" in answer.lower() or
+            "только с вопросами" in answer.lower() or
+            "корпоративный ассистент" in answer.lower() or
+            "не относится" in answer.lower() or
+            "не найдена" in answer.lower() or
+            "не удалось найти" in answer.lower() or
+            "уточните ваш вопрос" in answer.lower() or
+            "уточнив его связь" in answer.lower() or
+            "повтори свой вопрос" in answer.lower()
+        )
+    )
+    if is_off_topic_or_refusal:
+        sources = []
+
+    # 6. Формирование валидного ответа
     return AssistantQueryResponse(
         request_id=req.request_id,
         answer=answer,

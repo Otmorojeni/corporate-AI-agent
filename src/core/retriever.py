@@ -170,13 +170,38 @@ class DocumentRetriever:
                     if prod_added >= per_prod_k:
                         break
         else:
-            # Если продукт не указан, поиск по всему корпусу
+            # Если продукт не указан:
             if self.all_bm25 and self.all_chunks:
-                scores = self.all_bm25.get_scores(expanded_words)
-                num_candidates = min(50, len(self.all_chunks))
-                top_candidates = heapq.nlargest(num_candidates, enumerate(scores), key=lambda x: x[1])
-                for idx, score in top_candidates:
-                    results.append((float(score), self.all_chunks[idx]))
+                if detected_terms:
+                    # 1. Если есть подтвержденные термины (напр. "Что такое DKP?"),
+                    # ищем по всей базе знаний с бустингом терминов
+                    scores = self.all_bm25.get_scores(expanded_words)
+                    num_candidates = min(50, len(self.all_chunks))
+                    top_candidates = heapq.nlargest(num_candidates, enumerate(scores), key=lambda x: x[1])
+                    for idx, score in top_candidates:
+                        chunk = self.all_chunks[idx]
+                        chunk_text = chunk["text"]
+                        chunk_lower = chunk_text.lower()
+                        boost = 0.0
+                        for term in detected_terms:
+                            if term.canonical in chunk_text:
+                                boost += 3.0
+                            if term.expansion.lower() in chunk_lower:
+                                boost += 5.0
+                        results.append((float(score) + boost, chunk))
+                else:
+                    # 2. Если нет ни продуктов, ни аббревиатур:
+                    # Фильтруем стоп-слова и союзы, требуем минимальный порог релевантности
+                    from src.core.matcher import STOP_WORDS
+                    content_words = [w for w in query_words if len(w) >= 3 and w.upper() not in STOP_WORDS]
+                    if content_words:
+                        scores = self.all_bm25.get_scores(content_words)
+                        num_candidates = min(50, len(self.all_chunks))
+                        top_candidates = heapq.nlargest(num_candidates, enumerate(scores), key=lambda x: x[1])
+                        for idx, score in top_candidates:
+                            # Порог релевантности: совпадение должно быть существенным
+                            if score >= 10.0:
+                                results.append((float(score), self.all_chunks[idx]))
 
         results.sort(key=lambda x: x[0], reverse=True)
 
