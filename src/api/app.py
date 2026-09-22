@@ -11,7 +11,6 @@ app = FastAPI(
     ),
 )
 
-# CORS middleware for Web UI (Streamlit, React, etc.)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,5 +19,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include official routes
+# Подключение всех официальных маршрутов по openapi.yaml
 app.include_router(router)
