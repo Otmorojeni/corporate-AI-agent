@@ -435,6 +435,11 @@ queryInput.addEventListener('keydown', (e) => {
   }
 });
 
+// Submit Button Click
+if (querySubmitBtn) {
+  querySubmitBtn.addEventListener('click', handleQuerySubmit);
+}
+
 // Expose handleQuerySubmit globally
 window.handleQuerySubmit = handleQuerySubmit;
 
@@ -642,6 +647,12 @@ askAboutDocBtn.addEventListener('click', () => {
   }
   switchTab('query');
   queryInput.focus();
+  setTimeout(() => {
+    const dotIndex = queryInput.value.indexOf('...');
+    if (dotIndex !== -1) {
+      queryInput.setSelectionRange(dotIndex, dotIndex + 3);
+    }
+  }, 50);
 });
 
 // Utilities
