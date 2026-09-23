@@ -30,7 +30,7 @@ client = TestClient(app)
 
 PDF_DIR = Path("data/test_dynamic_10_pdfs")
 PDF_DIR.mkdir(parents=True, exist_ok=True)
-REPORT_FILE = Path("data/dynamic_10_test_report.json")
+REPORT_FILE = Path("data/test_dynamic_10_report.json")
 
 # Спецификация 10 тестовых документов
 PDF_SPECS = [

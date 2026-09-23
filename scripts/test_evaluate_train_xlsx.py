@@ -237,7 +237,7 @@ def main():
         "cases": evaluated_cases
     }
 
-    report_path = PROJECT_ROOT / "data" / "train_xlsx_evaluation_report.json"
+    report_path = PROJECT_ROOT / "data" / "test_train_xlsx_evaluation_report.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     with open(report_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)

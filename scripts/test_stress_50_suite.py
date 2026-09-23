@@ -572,7 +572,7 @@ report = {
     }
 }
 
-report_path = PROJECT_ROOT / "data" / "stress_50_test_report.json"
+report_path = PROJECT_ROOT / "data" / "test_stress_50_report.json"
 with open(report_path, "w", encoding="utf-8") as f:
     json.dump(report, f, ensure_ascii=False, indent=2)
 

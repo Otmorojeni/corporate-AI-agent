@@ -4,9 +4,9 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
 [![LLM](https://img.shields.io/badge/LLM-GigaChat--2--Max%20(Cloud.ru)-green.svg)](https://cloud.ru)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1%20Strict-orange.svg)](openapi.yaml)
-[![Quality Score](https://img.shields.io/badge/Quality%20Score-100.0%25%20(R%3D1.0%2C%20E%3D1.0%2C%20A%3D1.0)-success.svg)](data/train_xlsx_evaluation_report.json)
-[![Stress Test](https://img.shields.io/badge/Stress%20Tests-50%2F50%20PASS%20(100%25)-brightgreen.svg)](data/stress_50_test_report.json)
-[![Dynamic Ingestion](https://img.shields.io/badge/Dynamic%20Ingestion-10%20PDF%20%7C%2020%20Queries%20(100%25)-brightgreen.svg)](data/dynamic_10_test_report.json)
+[![Quality Score](https://img.shields.io/badge/Quality%20Score-100.0%25%20(R%3D1.0%2C%20E%3D1.0%2C%20A%3D1.0)-success.svg)](data/test_train_xlsx_evaluation_report.json)
+[![Stress Test](https://img.shields.io/badge/Stress%20Tests-50%2F50%20PASS%20(100%25)-brightgreen.svg)](data/test_stress_50_report.json)
+[![Dynamic Ingestion](https://img.shields.io/badge/Dynamic%20Ingestion-10%20PDF%20%7C%2020%20Queries%20(100%25)-brightgreen.svg)](data/test_dynamic_10_report.json)
 [![Contract Tests](https://img.shields.io/badge/Contract%20Tests-10%2F10%20OK-brightgreen.svg)](tests/test_contract.py)
 
 **Сервис интеллектуального анализа технической документации, автоматического извлечения аббревиатур и контекстного поиска фактов по 17 российским программным продуктам компании ПАО «Газпром нефть».**
@@ -292,16 +292,16 @@ corporate-AI-agent/
 ├── data/
 │   ├── terms.jsonl                   # 346 эталонных словарных записей с цитатами, страницами и sha256
 │   ├── chunks_by_product.json        # 19 257 чанков базы знаний (47.6 МБ, включен в репозиторий)
-│   ├── dynamic_10_test_report.json   # Отчет теста динамической загрузки 10 PDF и 20 запросов (100% PASS)
-│   ├── comprehensive_test_report.json# Отчет комплексного тестирования на 30 сценариев (100% PASS)
-│   ├── stress_50_test_report.json    # Отчет стресс-тестирования на 50 сценариев (100% PASS)
-│   └── train_xlsx_evaluation_report.json # Полный отчет оценки метрик на evaluation__train.xlsx
+│   ├── test_dynamic_10_report.json   # Отчет теста динамической загрузки 10 PDF и 20 запросов (100% PASS)
+│   ├── test_comprehensive_report.json# Отчет комплексного тестирования на 30 сценариев (100% PASS)
+│   ├── test_stress_50_report.json    # Отчет стресс-тестирования на 50 сценариев (100% PASS)
+│   └── test_train_xlsx_evaluation_report.json # Полный отчет оценки метрик на evaluation__train.xlsx
 ├── scripts/
 │   ├── __init__.py                   # Пакет вспомогательных скриптов
 │   ├── 01_build_dictionary.py        # Пакетное извлечение аббревиатур из 139 PDF в data/terms.jsonl
 │   ├── 02_build_rag_index.py         # Постраничная нарезка чанков и сборка data/chunks_by_product.json
 │   ├── 03_evaluate_train.py          # Автоматический бенчмарк метрик R, E, A, Quality и задержки
-│   ├── evaluate_train_xlsx.py        # Расширенный бенчмарк по evaluation__train.xlsx с 3 повторами
+│   ├── test_evaluate_train_xlsx.py        # Расширенный бенчмарк по evaluation__train.xlsx с 3 повторами
 │   ├── test_dynamic_10_pdf_20_queries.py # Комплексный тест: генерация 10 PDF, загрузка и 20 запросов (100% PASS)
 │   ├── test_comprehensive_suite.py   # Стенд из 30 тестов (20 запросов пользователей + 10 PDF)
 │   └── test_stress_50_suite.py       # Полный стресс-тест из 50 сценариев (30 запросов + 20 PDF)
@@ -364,10 +364,10 @@ corporate-AI-agent/
 - [`scripts/01_build_dictionary.py`](scripts/01_build_dictionary.py): Автоматический офлайн-скрипт парсинга всех 139 PDF корпуса и сборки чистого словаря `data/terms.jsonl` (346 терминов).
 - [`scripts/02_build_rag_index.py`](scripts/02_build_rag_index.py): Офлайн-скрипт нарезки 16 825 страниц на 19 257 чанков со структурированием по 17 продуктовым папкам в `data/chunks_by_product.json`.
 - [`scripts/03_evaluate_train.py`](scripts/03_evaluate_train.py): Скрипт автоматического расчета метрик $R, E, A$, Quality Score и времени ответа по 5 эталонным вопросам.
-- [`scripts/evaluate_train_xlsx.py`](scripts/evaluate_train_xlsx.py): Расширенный скрипт оценки качества по файлу `evaluation__train.xlsx` с проведением 3 независимых повторов для замера стабильности и повторяемости ответов.
-- [`scripts/test_dynamic_10_pdf_20_queries.py`](scripts/test_dynamic_10_pdf_20_queries.py): Автономный комплексный стенд: генерация 10 валидных корпоративных многостраничных PDF, их динамическая потоковая загрузка через `/v1/abbreviations/extract`, регистрация терминов и чанков в In-Memory индексах и проведение 20 пользовательских обращений к `/v1/assistant/query` с сохранением отчета в `data/dynamic_10_test_report.json` (30/30 PASS, 100%).
-- [`scripts/test_comprehensive_suite.py`](scripts/test_comprehensive_suite.py): Тестовый комплекс из 30 разнородных сценариев (20 запросов пользователей по 17 вендорам + 10 PDF-тестов) с сохранением отчета в `data/comprehensive_test_report.json`.
-- [`scripts/test_stress_50_suite.py`](scripts/test_stress_50_suite.py): Промышленный стресс-тест из 50 сценариев (30 сложных запросов + 20 PDF сценариев) с валидацией граничных случаев и сохранением отчета в `data/stress_50_test_report.json`.
+- [`scripts/test_evaluate_train_xlsx.py`](scripts/test_evaluate_train_xlsx.py): Расширенный скрипт оценки качества по файлу `evaluation__train.xlsx` с проведением 3 независимых повторов для замера стабильности и повторяемости ответов.
+- [`scripts/test_dynamic_10_pdf_20_queries.py`](scripts/test_dynamic_10_pdf_20_queries.py): Автономный комплексный стенд: генерация 10 валидных корпоративных многостраничных PDF, их динамическая потоковая загрузка через `/v1/abbreviations/extract`, регистрация терминов и чанков в In-Memory индексах и проведение 20 пользовательских обращений к `/v1/assistant/query` с сохранением отчета в `data/test_dynamic_10_report.json` (30/30 PASS, 100%).
+- [`scripts/test_comprehensive_suite.py`](scripts/test_comprehensive_suite.py): Тестовый комплекс из 30 разнородных сценариев (20 запросов пользователей по 17 вендорам + 10 PDF-тестов) с сохранением отчета в `data/test_comprehensive_report.json`.
+- [`scripts/test_stress_50_suite.py`](scripts/test_stress_50_suite.py): Промышленный стресс-тест из 50 сценариев (30 сложных запросов + 20 PDF сценариев) с валидацией граничных случаев и сохранением отчета в `data/test_stress_50_report.json`.
 
 #### Графический веб-интерфейс (`ui/`):
 - [`ui/index.html`](ui/index.html): Семантическая разметка одностраничного приложения: панель диалога с ассистентом, карточки источников, интерактивная drag-and-drop область загрузки PDF, таблица извлеченных терминов.
@@ -509,7 +509,7 @@ corporate-AI-agent/
 
 ### В13: «Как подтверждается качество вашего решения на эталонных данных?»
 **Ответ:**
-> «Запуск автоматического бенчмарка [`scripts/evaluate_train_xlsx.py`](scripts/evaluate_train_xlsx.py) по всем 5 эталонным запросам из файла `evaluation__train.xlsx` показывает:
+> «Запуск автоматического бенчмарка [`scripts/test_evaluate_train_xlsx.py`](scripts/test_evaluate_train_xlsx.py) по всем 5 эталонным запросам из файла `evaluation__train.xlsx` показывает:
 > - **Распознавание аббревиатур ($R$): 100.0%**
 > - **Точность расшифровки ($E$): 100.0%**
 > - **Фактическая полнота ответа ($A$): 100.0%**
@@ -562,7 +562,7 @@ corporate-AI-agent/
 | 4 | Общий адрес для NLB в Deckhouse и почему VPA не изменит лимиты? | 1.0 (NLB, VPA) | 1.0 (Network Load Balancer, Vertical Pod Autoscaler) | 1.0 (shared-ip-key, requests) | **100.0%** | 8.82 с | 100% идентично |
 | 5 | ЛИНТЕР WAL и Tarantool WAL (дисамбигуация омонимов)? | 1.0 (WAL, WAL) | 1.0 (Write Access Level, write ahead log) | 1.0 (-ux, checkpoint) | **100.0%** | 8.57 с | 100% идентично |
 
-Полный структурированный JSON-отчет замеров доступен в файле [`data/train_xlsx_evaluation_report.json`](data/train_xlsx_evaluation_report.json).
+Полный структурированный JSON-отчет замеров доступен в файле [`data/test_train_xlsx_evaluation_report.json`](data/test_train_xlsx_evaluation_report.json).
 
 ---
 
@@ -588,7 +588,7 @@ corporate-AI-agent/
 | • *Валидация типов (415) и лимита 50 МиБ (413)* | 3 | 3 | 0 | 0.12 сек | 100.0% |
 | **ИТОГО ПО ВСЕМ 50 СЦЕНАРИЯМ** | **50** | **50** | **0** | **5.47 сек** | **100.0%** |
 
-Полный машиночитаемый отчет стресс-тестирования сохранен в [`data/stress_50_test_report.json`](data/stress_50_test_report.json).
+Полный машиночитаемый отчет стресс-тестирования сохранен в [`data/test_stress_50_report.json`](data/test_stress_50_report.json).
 
 ---
 
@@ -629,7 +629,7 @@ corporate-AI-agent/
 - **`Q-19`**: *«Что такое ОББ и какой тайм-аут ожидания транзакции в doc db balancer?»* $\to$ `detected_terms: [ОББ]`, факт: `lock_timeout_ms=1500`, задержка 1.48 с.
 - **`Q-20`**: *«Какое максимальное число сессий поддерживает ПСС по doc db balancer?»* $\to$ `detected_terms: [ПСС]`, факт: `max_pool_connections=12000`, задержка 1.54 с.
 
-Полный машиночитаемый JSON-отчет тестирования сохранен в [`data/dynamic_10_test_report.json`](data/dynamic_10_test_report.json).
+Полный машиночитаемый JSON-отчет тестирования сохранен в [`data/test_dynamic_10_report.json`](data/test_dynamic_10_report.json).
 
 ---
 
@@ -721,7 +721,7 @@ python scripts/test_dynamic_10_pdf_20_queries.py
 
 ### 9.7. Запуск оценки качества на эталонных запросах
 ```bash
-python scripts/evaluate_train_xlsx.py
+python scripts/test_evaluate_train_xlsx.py
 ```
 *Результат:* расчет метрик $R$, $E$, $A$, Quality и задержки ответа по всем 5 вопросам с 3 повторами.
 

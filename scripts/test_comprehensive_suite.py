@@ -487,7 +487,7 @@ summary = {
     }
 }
 
-report_path = PROJECT_ROOT / "data" / "comprehensive_test_report.json"
+report_path = PROJECT_ROOT / "data" / "test_comprehensive_report.json"
 with open(report_path, "w", encoding="utf-8") as f:
     json.dump(summary, f, ensure_ascii=False, indent=2)
 
