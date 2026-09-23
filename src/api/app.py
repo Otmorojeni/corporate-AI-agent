@@ -14,6 +14,7 @@ UI_DIR = BASE_DIR / "ui"
 INDEX_HTML = UI_DIR / "index.html"
 STYLE_CSS = UI_DIR / "style.css"
 APP_JS = UI_DIR / "app.js"
+OPENAPI_YAML = BASE_DIR / "openapi.yaml"
 
 app = FastAPI(
     title="Corporate Abbreviation Assistant API",
@@ -79,6 +80,18 @@ async def serve_js():
             APP_JS,
             media_type="application/javascript",
             headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache"},
+        )
+    return Response(status_code=404)
+ 
+ 
+@app.get("/openapi.yaml", include_in_schema=False)
+async def serve_openapi_yaml():
+    """Раздача спецификации openapi.yaml для автоматических систем верификации жюри."""
+    if OPENAPI_YAML.exists():
+        return FileResponse(
+            OPENAPI_YAML,
+            media_type="application/yaml",
+            headers={"Content-Disposition": "inline; filename=openapi.yaml"},
         )
     return Response(status_code=404)
 

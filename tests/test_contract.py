@@ -225,6 +225,11 @@ def test_ui_endpoints():
     paths = set(res_schema.json().get("paths", {}).keys())
     assert paths == {"/health", "/v1/abbreviations/extract", "/v1/assistant/query"}
 
+    # 6. Проверка доступности исходного openapi.yaml
+    res_yaml = client.get("/openapi.yaml")
+    assert res_yaml.status_code == 200
+    assert "openapi: 3.1.0" in res_yaml.text
+
 
 if __name__ == "__main__":
     tests = [
