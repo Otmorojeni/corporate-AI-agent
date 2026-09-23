@@ -3,14 +3,14 @@
     "total": 20,
     "passed": 20,
     "failed": 0,
-    "avg_latency": 5.58,
+    "avg_latency": 5.62,
     "details": [
       {
         "id": "Q01",
         "category": "Train Benchmark",
         "desc": "eXpress: расшифровка CTS",
         "status": "PASS",
-        "latency_sec": 1.74,
+        "latency_sec": 1.49,
         "terms_count": 1,
         "sources_count": 4,
         "error": ""
@@ -20,7 +20,7 @@
         "category": "Train Benchmark",
         "desc": "Kaspersky: предварительная установка службы SNMP",
         "status": "PASS",
-        "latency_sec": 1.93,
+        "latency_sec": 2.06,
         "terms_count": 1,
         "sources_count": 4,
         "error": ""
@@ -30,7 +30,7 @@
         "category": "Train Benchmark",
         "desc": "Deckhouse: аутентификация в DKP и редирект",
         "status": "PASS",
-        "latency_sec": 2.05,
+        "latency_sec": 2.94,
         "terms_count": 1,
         "sources_count": 4,
         "error": ""
@@ -40,7 +40,7 @@
         "category": "Train Benchmark",
         "desc": "Deckhouse: совместное использование NLB и VPA",
         "status": "PASS",
-        "latency_sec": 7.99,
+        "latency_sec": 7.9,
         "terms_count": 2,
         "sources_count": 4,
         "error": ""
@@ -50,7 +50,7 @@
         "category": "Train Benchmark",
         "desc": "Омонимы: разделение контекста WAL (ЛИНТЕР vs Tarantool)",
         "status": "PASS",
-        "latency_sec": 10.34,
+        "latency_sec": 9.31,
         "terms_count": 2,
         "sources_count": 4,
         "error": ""
@@ -60,7 +60,7 @@
         "category": "Vendor Coverage",
         "desc": "Киберпротект: служба теневого копирования VSS",
         "status": "PASS",
-        "latency_sec": 9.95,
+        "latency_sec": 9.83,
         "terms_count": 0,
         "sources_count": 4,
         "error": ""
@@ -70,7 +70,7 @@
         "category": "Vendor Coverage",
         "desc": "ROSA: модули аутентификации PAM",
         "status": "PASS",
-        "latency_sec": 11.47,
+        "latency_sec": 11.98,
         "terms_count": 1,
         "sources_count": 4,
         "error": ""
@@ -80,7 +80,7 @@
         "category": "Vendor Coverage",
         "desc": "Arenadata DB: фреймворк PXF",
         "status": "PASS",
-        "latency_sec": 10.28,
+        "latency_sec": 11.37,
         "terms_count": 0,
         "sources_count": 4,
         "error": ""
@@ -90,7 +90,7 @@
         "category": "Vendor Coverage",
         "desc": "Postgres Pro: ведение журнала предзаписи WAL",
         "status": "PASS",
-        "latency_sec": 3.33,
+        "latency_sec": 3.89,
         "terms_count": 1,
         "sources_count": 4,
         "error": ""
@@ -100,7 +100,7 @@
         "category": "Vendor Coverage",
         "desc": "UserGate: функционал NGFW",
         "status": "PASS",
-        "latency_sec": 6.97,
+        "latency_sec": 7.17,
         "terms_count": 0,
         "sources_count": 4,
         "error": ""
@@ -111,7 +111,7 @@
         "desc": "TrueConf: протокол телефонии SIP",
         "status": "PASS",
         "latency_sec": 9.11,
-        "terms_count": 2,
+        "terms_count": 1,
         "sources_count": 4,
         "error": ""
       },
@@ -120,7 +120,7 @@
         "category": "Vendor Coverage",
         "desc": "InfoWatch: система предотвращения утечек DLP",
         "status": "PASS",
-        "latency_sec": 8.56,
+        "latency_sec": 7.99,
         "terms_count": 1,
         "sources_count": 4,
         "error": ""
@@ -130,7 +130,7 @@
         "category": "Vendor Coverage",
         "desc": "МойОфис: комплект разработчика SDK",
         "status": "PASS",
-        "latency_sec": 5.85,
+        "latency_sec": 5.23,
         "terms_count": 0,
         "sources_count": 4,
         "error": ""
@@ -140,7 +140,7 @@
         "category": "Transliteration",
         "desc": "Транслитерация: русский ввод 'СТС' -> 'CTS'",
         "status": "PASS",
-        "latency_sec": 3.89,
+        "latency_sec": 3.69,
         "terms_count": 1,
         "sources_count": 4,
         "error": ""
@@ -150,9 +150,9 @@
         "category": "Transliteration",
         "desc": "Транслитерация: русский ввод 'снмп' -> 'SNMP'",
         "status": "PASS",
-        "latency_sec": 2.69,
+        "latency_sec": 2.56,
         "terms_count": 1,
-        "sources_count": 4,
+        "sources_count": 0,
         "error": ""
       },
       {
@@ -160,7 +160,7 @@
         "category": "Transliteration",
         "desc": "Транслитерация: русский ввод 'нлб' -> 'NLB'",
         "status": "PASS",
-        "latency_sec": 6.04,
+        "latency_sec": 6.15,
         "terms_count": 1,
         "sources_count": 4,
         "error": ""
@@ -170,7 +170,7 @@
         "category": "Off-topic Handling",
         "desc": "Офф-топик: вопрос не по документации (пустые detected_terms и sources)",
         "status": "PASS",
-        "latency_sec": 2.46,
+        "latency_sec": 2.14,
         "terms_count": 0,
         "sources_count": 0,
         "error": ""
@@ -180,7 +180,7 @@
         "category": "Security & Grounding",
         "desc": "Безопасность: отказ выдачи вымышленных паролей",
         "status": "PASS",
-        "latency_sec": 1.22,
+        "latency_sec": 1.13,
         "terms_count": 0,
         "sources_count": 0,
         "error": ""
@@ -190,7 +190,7 @@
         "category": "Product / Daemon",
         "desc": "Запрос без аббревиатур: РОСА и systemd не попадают в detected_terms",
         "status": "PASS",
-        "latency_sec": 3.79,
+        "latency_sec": 4.23,
         "terms_count": 0,
         "sources_count": 4,
         "error": ""
@@ -200,9 +200,9 @@
         "category": "Under-specified Query",
         "desc": "Недоуточненный запрос: общий вопрос о кластеризации",
         "status": "PASS",
-        "latency_sec": 1.94,
+        "latency_sec": 2.25,
         "terms_count": 0,
-        "sources_count": 4,
+        "sources_count": 0,
         "error": ""
       }
     ]
@@ -211,7 +211,7 @@
     "total": 10,
     "passed": 10,
     "failed": 0,
-    "avg_latency": 2.26,
+    "avg_latency": 1.0,
     "details": [
       {
         "id": "E01",
@@ -220,7 +220,7 @@
         "status": "PASS",
         "status_code": 200,
         "abbr_count": 1,
-        "latency_sec": 2.91,
+        "latency_sec": 1.29,
         "error": ""
       },
       {
@@ -230,7 +230,7 @@
         "status": "PASS",
         "status_code": 200,
         "abbr_count": 1,
-        "latency_sec": 2.87,
+        "latency_sec": 1.03,
         "error": ""
       },
       {
@@ -240,7 +240,7 @@
         "status": "PASS",
         "status_code": 200,
         "abbr_count": 1,
-        "latency_sec": 2.68,
+        "latency_sec": 1.27,
         "error": ""
       },
       {
@@ -250,7 +250,7 @@
         "status": "PASS",
         "status_code": 200,
         "abbr_count": 2,
-        "latency_sec": 2.52,
+        "latency_sec": 1.28,
         "error": ""
       },
       {
@@ -260,7 +260,7 @@
         "status": "PASS",
         "status_code": 200,
         "abbr_count": 1,
-        "latency_sec": 2.73,
+        "latency_sec": 1.27,
         "error": ""
       },
       {
@@ -270,7 +270,7 @@
         "status": "PASS",
         "status_code": 200,
         "abbr_count": 0,
-        "latency_sec": 2.96,
+        "latency_sec": 1.28,
         "error": ""
       },
       {
@@ -280,7 +280,7 @@
         "status": "PASS",
         "status_code": 200,
         "abbr_count": 0,
-        "latency_sec": 2.93,
+        "latency_sec": 1.09,
         "error": ""
       },
       {
@@ -290,7 +290,7 @@
         "status": "PASS",
         "status_code": 200,
         "abbr_count": 1,
-        "latency_sec": 2.8,
+        "latency_sec": 1.18,
         "error": ""
       },
       {
@@ -310,7 +310,7 @@
         "status": "PASS",
         "status_code": 413,
         "abbr_count": 0,
-        "latency_sec": 0.24,
+        "latency_sec": 0.3,
         "error": ""
       }
     ]

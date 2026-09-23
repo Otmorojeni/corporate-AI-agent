@@ -23,3 +23,7 @@ corpus/
 
 # Search index caches (built in RAM at startup)
 data/indices/
+
+# Temporary test PDF artifacts and scratch
+data/test_dynamic_10_pdfs/
+scratch/

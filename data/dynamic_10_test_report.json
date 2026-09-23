@@ -1,0 +1,704 @@
+{
+  "timestamp": "2026-09-23T11:12:23Z",
+  "uploads": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "avg_latency_sec": 1.23,
+    "details": [
+      {
+        "id": "UPLOAD-01",
+        "filename": "doc_sdwan_core.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.492,
+        "abbrs_count": 3,
+        "found_terms": [
+          "ПОС -> Программно-определяемая сеть",
+          "КПШ -> Корпоративный программный шлюз",
+          "МШТ -> Маршрутизатор широкого трафика для балансировки очередей"
+        ],
+        "missing": []
+      },
+      {
+        "id": "UPLOAD-02",
+        "filename": "doc_cyber_soc.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.326,
+        "abbrs_count": 3,
+        "found_terms": [
+          "ЦУБ -> Центр управления безопасностью",
+          "КИИ -> Критическая информационная инфраструктура",
+          "СЗИ -> Средство защиты информации для изоляции хостов"
+        ],
+        "missing": []
+      },
+      {
+        "id": "UPLOAD-03",
+        "filename": "doc_erp_sync.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.017,
+        "abbrs_count": 3,
+        "found_terms": [
+          "МСД -> Мастер-система данных",
+          "ЕХНСИ -> Единое хранилище нормативно-справочной информации",
+          "КШП -> Корпоративная шина передачи пакетов"
+        ],
+        "missing": []
+      },
+      {
+        "id": "UPLOAD-04",
+        "filename": "doc_ai_compute.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.367,
+        "abbrs_count": 3,
+        "found_terms": [
+          "ВКИИ -> Вычислительный кластер искусственного интеллекта",
+          "ПРЗ -> Пакетный распределитель задач",
+          "ТОР -> Тензорный операционный репозиторий"
+        ],
+        "missing": []
+      },
+      {
+        "id": "UPLOAD-05",
+        "filename": "doc_cloud_storage.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.155,
+        "abbrs_count": 3,
+        "found_terms": [
+          "РФС -> Распределенная файловая система",
+          "КБУ -> Каталог блочных устройств",
+          "ОХД -> Объектное хранилище данных"
+        ],
+        "missing": []
+      },
+      {
+        "id": "UPLOAD-06",
+        "filename": "doc_idm_access.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.071,
+        "abbrs_count": 3,
+        "found_terms": [
+          "РМД -> Ролевая модель доступа",
+          "СКУЗ -> Система контроля учетных записей",
+          "МФА -> Многофакторная фильтрация и аутентификация"
+        ],
+        "missing": []
+      },
+      {
+        "id": "UPLOAD-07",
+        "filename": "doc_telecom_mesh.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.263,
+        "abbrs_count": 3,
+        "found_terms": [
+          "БРС -> Базовая радиостанция связи",
+          "ЯТС -> Ячеистая топология связи",
+          "ШПД -> Широкополосный доступ передачи данных"
+        ],
+        "missing": []
+      },
+      {
+        "id": "UPLOAD-08",
+        "filename": "doc_devops_ci.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.271,
+        "abbrs_count": 3,
+        "found_terms": [
+          "КНС -> Конвейер непрерывной сборки",
+          "РАП -> Репозиторий артефактов поставки",
+          "СТД -> Среда тестового деплоя"
+        ],
+        "missing": []
+      },
+      {
+        "id": "UPLOAD-09",
+        "filename": "doc_iot_scada.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.103,
+        "abbrs_count": 3,
+        "found_terms": [
+          "ПЛК -> Программируемый логический контроллер",
+          "УСПД -> Устройство сбора и передачи данных",
+          "АСУТП -> Автоматизированная система управления технологическим процессом"
+        ],
+        "missing": []
+      },
+      {
+        "id": "UPLOAD-10",
+        "filename": "doc_db_balancer.pdf",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.233,
+        "abbrs_count": 3,
+        "found_terms": [
+          "ОББ -> Отказоустойчивый балансировщик базы",
+          "ПСС -> Пул сессионных соединений",
+          "МТБ -> Менеджер транзакционной блокировки"
+        ],
+        "missing": []
+      }
+    ]
+  },
+  "queries": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0,
+    "pass_rate_percent": 100.0,
+    "avg_latency_sec": 1.76,
+    "details": [
+      {
+        "id": "Q-01",
+        "query": "Как в doc_sdwan_core расшифровывается ПОС?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 3.14,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "ПОС",
+            "expansion": "Программно-определяемая сеть"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_sdwan_core.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_sdwan_core.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте doc_sdwan_core ПОС означает «Программно-определяемая сеть»...."
+      },
+      {
+        "id": "Q-02",
+        "query": "Что означает КПШ и какой параметр задает шифрование туннелей в doc sdwan core?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.94,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "КПШ",
+            "expansion": "Корпоративный программный шлюз"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_sdwan_core.pdf",
+            "page": 2
+          },
+          {
+            "document_id": "doc_sdwan_core.pdf",
+            "page": 1
+          }
+        ],
+        "answer_preview": "В контексте SD-WAN Core КПШ означает «Корпоративный программный шлюз».\nПараметр tunnel-security=gost задает активацию ГО..."
+      },
+      {
+        "id": "Q-03",
+        "query": "Как в doc_cyber_soc расшифровывается ЦУБ?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.54,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "ЦУБ",
+            "expansion": "Центр управления безопасностью"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_cyber_soc.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_cyber_soc.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте doc_cyber_soc ЦУБ означает «Центр управления безопасностью»...."
+      },
+      {
+        "id": "Q-04",
+        "query": "Что означает КИИ и в какую очередь отправляется алерт Sev-1 в cyber soc?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.44,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "КИИ",
+            "expansion": "Критическая информационная инфраструктура"
+          },
+          {
+            "canonical": "SOC",
+            "expansion": "Security Operation Center"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_cyber_soc.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_cyber_soc.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте Cyber SOC КИИ означает «Критическая информационная инфраструктура». Алерт уровня Sev-1 отправляется в очеред..."
+      },
+      {
+        "id": "Q-05",
+        "query": "Как в документации расшифровывается МСД?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 2.0,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "МСД",
+            "expansion": "Мастер-система данных"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_erp_sync.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_erp_sync.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте doc_erp_sync МСД означает «Мастер-система данных»...."
+      },
+      {
+        "id": "Q-06",
+        "query": "Что такое ЕХНСИ и какова периодичность синхронизации сущностей контрагентов в doc_erp_sync?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 2.6,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "ЕХНСИ",
+            "expansion": "Единое хранилище нормативно-справочной информации"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_erp_sync.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_erp_sync.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте doc_erp_sync ЕХНСИ означает «Единое хранилище нормативно-справочной информации».\n\nПериодичность синхронизаци..."
+      },
+      {
+        "id": "Q-07",
+        "query": "Как в doc_ai_compute расшифровывается ВКИИ?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.94,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "ВКИИ",
+            "expansion": "Вычислительный кластер искусственного интеллекта"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_ai_compute.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_ai_compute.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте doc_ai_compute ВКИИ означает «Вычислительный кластер искусственного интеллекта»...."
+      },
+      {
+        "id": "Q-08",
+        "query": "Что означает ПРЗ и какой протокол используется для распределения тензоров между узлами DGX в ai compute?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.84,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "ПРЗ",
+            "expansion": "Пакетный распределитель задач"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_ai_compute.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_ai_compute.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте AI Compute ПРЗ означает «Пакетный распределитель задач».\n\nПротокол, используемый для распределения тензоров ..."
+      },
+      {
+        "id": "Q-09",
+        "query": "Как в doc_cloud_storage расшифровывается РФС?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.54,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "РФС",
+            "expansion": "Распределенная файловая система"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_cloud_storage.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_cloud_storage.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте doc_cloud_storage РФС означает «Распределенная файловая система»...."
+      },
+      {
+        "id": "Q-10",
+        "query": "Что такое КБУ и каков фактор репликации пула метаданных в cloud storage?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.53,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "КБУ",
+            "expansion": "Каталог блочных устройств"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_cloud_storage.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_cloud_storage.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте Cloud Storage КБУ означает «Каталог блочных устройств». Фактор репликации пула метаданных равен 3...."
+      },
+      {
+        "id": "Q-11",
+        "query": "Как в документации расшифровывается РМД?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.13,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "РМД",
+            "expansion": "Ролевая модель доступа"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_idm_access.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_idm_access.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте IDM Access РМД означает «Ролевая модель доступа»...."
+      },
+      {
+        "id": "Q-12",
+        "query": "Что означает СКУЗ и после скольких неверных попыток OTP наступает блокировка в idm access?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.64,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "СКУЗ",
+            "expansion": "Система контроля учетных записей"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_idm_access.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_idm_access.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте IDM Access СКУЗ означает «Система контроля учетных записей».\n\nБлокировка сессии пользователя наступает после..."
+      },
+      {
+        "id": "Q-13",
+        "query": "Как в doc_telecom_mesh расшифровывается БРС?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.33,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "БРС",
+            "expansion": "Базовая радиостанция связи"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_telecom_mesh.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_telecom_mesh.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте doc_telecom_mesh БРС означает «Базовая радиостанция связи»...."
+      },
+      {
+        "id": "Q-14",
+        "query": "Что такое ЯТС и какая максимальная задержка допустима между узлами в telecom mesh?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 2.25,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "ЯТС",
+            "expansion": "Ячеистая топология связи"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_telecom_mesh.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_telecom_mesh.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте Telecom Mesh ЯТС означает «Ячеистая топология связи». Максимальная задержка между смежными узлами радиорелей..."
+      },
+      {
+        "id": "Q-15",
+        "query": "Как в документации расшифровывается КНС?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.54,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "КНС",
+            "expansion": "Конвейер непрерывной сборки"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_devops_ci.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_devops_ci.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте DevOps CI КНС означает «Конвейер непрерывной сборки»...."
+      },
+      {
+        "id": "Q-16",
+        "query": "Что означает РАП и в какой изолированной среде выполняется сборка образов в devops ci?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.74,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "РАП",
+            "expansion": "Репозиторий артефактов поставки"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_devops_ci.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_devops_ci.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте DevOps CI РАП означает «Репозиторий артефактов поставки».\n\nСборка образов контейнеров выполняется в изолиров..."
+      },
+      {
+        "id": "Q-17",
+        "query": "Как в doc_iot_scada расшифровывается ПЛК?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.3,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "ПЛК",
+            "expansion": "Программируемый логический контроллер"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_iot_scada.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_iot_scada.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте doc_iot_scada ПЛК означает «Программируемый логический контроллер»...."
+      },
+      {
+        "id": "Q-18",
+        "query": "Что такое УСПД и с какой частотой опрашиваются датчики давления по Modbus RTU в iot scada?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.78,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "УСПД",
+            "expansion": "Устройство сбора и передачи данных"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_iot_scada.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_iot_scada.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте IoT SCADA УСПД означает «Устройство сбора и передачи данных».\n\nДатчики давления опрашиваются по протоколу Mo..."
+      },
+      {
+        "id": "Q-19",
+        "query": "Как в документации расшифровывается ОББ?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.33,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "ОББ",
+            "expansion": "Отказоустойчивый балансировщик базы"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_db_balancer.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_db_balancer.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте DB Balancer ОББ означает «Отказоустойчивый балансировщик базы»...."
+      },
+      {
+        "id": "Q-20",
+        "query": "Что означает ПСС и каков таймаут удержания неактивного клиентского соединения в db balancer?",
+        "status_code": 200,
+        "status": "PASS",
+        "latency_sec": 1.63,
+        "term_matched": true,
+        "source_matched": true,
+        "ans_has_fact": true,
+        "detected_terms": [
+          {
+            "canonical": "ПСС",
+            "expansion": "Пул сессионных соединений"
+          }
+        ],
+        "sources": [
+          {
+            "document_id": "doc_db_balancer.pdf",
+            "page": 1
+          },
+          {
+            "document_id": "doc_db_balancer.pdf",
+            "page": 2
+          }
+        ],
+        "answer_preview": "В контексте DB Balancer ПСС означает «Пул сессионных соединений».\n\nТаймаут удержания неактивного клиентского соединения ..."
+      }
+    ]
+  }
+}

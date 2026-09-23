@@ -194,17 +194,22 @@ class TermMatcher:
                             seen_pairs.add(pair)
                             matched_terms.append(DetectedTerm(canonical=canon, expansion=exp))
 
-        # 2. Если продукт не определен в вопросе:
-        # Ищем ТОЛЬКО точные совпадения по всей базе канонических форм (включая транслитерацию),
-        # либо если слово в запросе написано ПОЛНОСТЬЮ ЗАГЛАВНЫМИ БУКВАМИ (длина >= 4) с расстоянием <= 1.
-        # Это категорически предотвращает ложные срабатывания на обычные слова с заглавной буквы
-        # (например, "Реал" не будет сопоставляться с "RAL").
-        if not matched_terms:
+        # 2. Поиск по общему каноническому индексу:
+        # Для слов запроса, которые еще не были сопоставлены в шаге 1 (или если продукт не был указан).
+        matched_canons = {t.canonical.upper() for t in matched_terms}
+        remaining_candidates = [
+            (orig, up, tr) for (orig, up, tr) in word_candidates
+            if up not in matched_canons and tr not in matched_canons
+        ]
+
+        if remaining_candidates:
             for canon_upper, entries in self.canonical_index.items():
+                if canon_upper in matched_canons:
+                    continue
                 term_matched = False
                 canon_len = len(canon_upper)
 
-                for orig_w, upper_w, trans_w in word_candidates:
+                for orig_w, upper_w, trans_w in remaining_candidates:
                     # Точное совпадение
                     if upper_w == canon_upper or trans_w == canon_upper:
                         term_matched = True
@@ -228,3 +233,19 @@ class TermMatcher:
 
         # Ограничение openapi.yaml: не более 16 терминов
         return matched_terms[:16]
+
+    def get_products_for_terms(self, terms: List[DetectedTerm]) -> List[str]:
+        """Возвращает список уникальных продуктов, к которым относятся найденные термины."""
+        prods = []
+        seen = set()
+        for t in terms:
+            canon_upper = t.canonical.upper()
+            entries = self.canonical_index.get(canon_upper, [])
+            for e in entries:
+                if e.get("expansion", "").strip().lower() == t.expansion.strip().lower():
+                    p = e.get("product")
+                    if p and p not in seen:
+                        seen.add(p)
+                        prods.append(p)
+        return prods
+

@@ -93,8 +93,8 @@ class DocumentRetriever:
             self.all_chunks.extend(chunks)
 
         if self.all_chunks:
-            all_tokenized = [tokenize_text(c["text"]) for c in self.all_chunks]
-            self.all_bm25 = BM25Okapi(all_tokenized)
+            self.all_tokenized = [tokenize_text(c["text"]) for c in self.all_chunks]
+            self.all_bm25 = BM25Okapi(self.all_tokenized)
 
     def add_dynamic_document(self, filename: str, content: bytes, product: Optional[str] = None) -> int:
         """
@@ -113,6 +113,7 @@ class DocumentRetriever:
                 raw_text = doc[page_idx].get_text("text")
                 if not raw_text:
                     continue
+                raw_text = raw_text.replace("\xad", "-").replace("\xa0", " ")
                 lines = [l.strip() for l in raw_text.split("\n") if l.strip()]
                 cleaned = "\n".join(lines)
                 if len(cleaned) < 40:
@@ -158,13 +159,19 @@ class DocumentRetriever:
             except Exception as e:
                 logger.warning("Failed to build product BM25 for '%s': %s", prod_key, e)
 
-        # Мгновенная переиндексация глобального BM25
-        all_tokenized = [t for t in (tokenize_text(c["text"]) for c in self.all_chunks) if t]
-        if all_tokenized and any(len(doc_tokens) > 0 for doc_tokens in all_tokenized):
+        # Мгновенная оптимизированная переиндексация глобального BM25 через кэш токенов
+        new_tokenized = [tokenize_text(c["text"]) for c in new_chunks]
+        if not hasattr(self, "all_tokenized") or not self.all_tokenized:
+            self.all_tokenized = [tokenize_text(c["text"]) for c in self.all_chunks]
+        else:
+            self.all_tokenized.extend(new_tokenized)
+
+        if self.all_tokenized and any(len(doc_tokens) > 0 for doc_tokens in self.all_tokenized):
             try:
-                self.all_bm25 = BM25Okapi(all_tokenized)
+                self.all_bm25 = BM25Okapi(self.all_tokenized)
             except Exception as e:
                 logger.warning("Failed to build global BM25: %s", e)
+
 
         logger.info(
             "Dynamically indexed %d chunks from '%s' under product '%s' (total chunks now: %d)",

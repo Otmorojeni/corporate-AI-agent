@@ -281,7 +281,7 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
         text = page.get_text("text")
         if not text:
             continue
-        text = text.replace("\xa0", " ").replace("\x00", "\t")
+        text = text.replace("\xad", "-").replace("\xa0", " ").replace("\x00", "\t")
 
         # 1. Парсинг глоссариев и списков определений (однострочные и двухстрочные форматы)
         glossary_terms = parse_glossary_page(text)

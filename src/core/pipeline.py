@@ -52,6 +52,13 @@ async def process_user_query(req: AssistantQueryRequest) -> AssistantQueryRespon
     detected_terms: List[DetectedTerm] = matcher.match_terms(query, products)
     t_match = (time.perf_counter() - t0) * 1000
 
+    # Если в запросе не было явного названия продукта, но распознаны подтвержденные термины,
+    # связываем их с соответствующими продуктами для точечного поиска в RAG-шардах
+    if not products and detected_terms:
+        term_products = matcher.get_products_for_terms(detected_terms)
+        if term_products:
+            products = term_products
+
     # 3. Поиск фрагментов базы знаний (RAG)
     t0 = time.perf_counter()
     context_chunks = retriever.retrieve(

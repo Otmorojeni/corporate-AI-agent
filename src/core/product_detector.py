@@ -145,14 +145,32 @@ def detect_products(query: str) -> List[str]:
 def register_dynamic_product(product_name: str) -> None:
     """
     Динамически регистрирует новое имя продукта/документа в детекторе.
-    Позволяет при загрузке нового PDF находить его имя в вопросах пользователей.
+    Позволяет при загрузке нового PDF находить его имя в вопросах пользователей
+    (включая написание через пробел, дефис или без служебного префикса doc_).
     """
     norm = product_name.strip().lower()
-    if not norm or norm in PRODUCT_PATTERNS:
+    if not norm:
         return
-    pattern = re.compile(rf"\b{re.escape(norm)}\b", re.IGNORECASE)
-    PRODUCT_PATTERNS[norm] = [rf"\b{re.escape(norm)}\b"]
-    COMPILED_PATTERNS[norm] = [pattern]
+
+    patterns = []
+    escaped_norm = re.escape(norm)
+    patterns.append(rf"\b{escaped_norm}\b")
+
+    # Вариант с заменой дефисов/подчеркиваний на пробелы или дефисы
+    flexible_norm = re.sub(r"[-_]+", r"[\\s_\\-]+", escaped_norm)
+    if flexible_norm != escaped_norm:
+        patterns.append(rf"\b{flexible_norm}\b")
+
+    # Вариант без стандартных префиксов документа (doc_, guide_, manual_, инструкция_)
+    clean_norm = re.sub(r"^(doc|guide|manual|инструкция|регламент)[-_]+", "", norm)
+    if clean_norm and clean_norm != norm:
+        clean_escaped = re.escape(clean_norm)
+        patterns.append(rf"\b{re.sub(r'[-_]+', r'[\\s_\\-]+', clean_escaped)}\b")
+        if len(clean_norm) >= 4:
+            PRIMARY_PRODUCT_NAMES[clean_norm] = norm
+
+    PRODUCT_PATTERNS[norm] = patterns
+    COMPILED_PATTERNS[norm] = [re.compile(p, re.IGNORECASE) for p in patterns]
     if len(norm) >= 4:
         PRIMARY_PRODUCT_NAMES[norm] = norm
 
