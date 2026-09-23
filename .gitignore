@@ -19,7 +19,7 @@ env/
 .vscode/
 
 # Raw corpus PDFs (excluded to keep repo lightweight and avoid GitVerse size limits)
-corpus/
+# -
 
 # Search index caches (built in RAM at startup)
 data/indices/
