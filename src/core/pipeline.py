@@ -123,14 +123,13 @@ async def process_user_query(req: AssistantQueryRequest) -> AssistantQueryRespon
         or "обратитесь к администратору" in answer_lower
     )
     is_security_or_credential_query = any(
-        kw in query_lower for kw in ("парол", "токен", "secret", "password", "token", "ключ доступа")
+        kw in query_lower for kw in ("парол", "токен", "secret", "password", "token", "ключ доступа", "системный промпт", "промпт", "prompt", "секрет", "зарплат", "инструкци")
     )
 
-    is_off_topic_or_refusal = (
-        (not detected_terms and not products and is_refusal_text)
-        or (is_security_or_credential_query and ("не могу" in answer_lower or "не содержит" in answer_lower or "обратитесь" in answer_lower or not detected_terms))
-    )
-    if is_off_topic_or_refusal:
+    if is_security_or_credential_query:
+        sources = []
+        detected_terms = []
+    elif is_refusal_text or (not detected_terms and not products):
         sources = []
 
     # 6. Формирование валидного ответа

@@ -1,0 +1,518 @@
+{
+  "query_tests_50": {
+    "total": 30,
+    "passed": 30,
+    "failed": 0,
+    "avg_latency": 7.65,
+    "details": [
+      {
+        "id": "Q21",
+        "category": "Vendor Deep Dive",
+        "desc": "Red Database: резервное копирование утилитой gbak",
+        "status": "PASS",
+        "latency_sec": 8.13,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q22",
+        "category": "Vendor Deep Dive",
+        "desc": "Red Virtualization: настройка пула виртуальных машин",
+        "status": "PASS",
+        "latency_sec": 12.79,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q23",
+        "category": "Vendor Deep Dive",
+        "desc": "Loginom: порты и компоненты визуальных сценариев",
+        "status": "PASS",
+        "latency_sec": 8.72,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q24",
+        "category": "Vendor Deep Dive",
+        "desc": "Tarantool: настройка спейсов и движка memtx",
+        "status": "PASS",
+        "latency_sec": 14.13,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q25",
+        "category": "Vendor Deep Dive",
+        "desc": "Postgres Pro: параметры autovacuum для таблиц",
+        "status": "PASS",
+        "latency_sec": 14.64,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q26",
+        "category": "Vendor Deep Dive",
+        "desc": "Kaspersky: групповые политики безопасности KSC",
+        "status": "PASS",
+        "latency_sec": 2.72,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q27",
+        "category": "Vendor Deep Dive",
+        "desc": "Deckhouse: ingress-контроллер и сертификаты",
+        "status": "PASS",
+        "latency_sec": 10.17,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q28",
+        "category": "Vendor Deep Dive",
+        "desc": "UserGate: правила фильтрации и трансляция NAT",
+        "status": "PASS",
+        "latency_sec": 10.3,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q29",
+        "category": "Vendor Deep Dive",
+        "desc": "TrueConf: интеграция с SIP/H.323 шлюзом",
+        "status": "PASS",
+        "latency_sec": 12.75,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q30",
+        "category": "Vendor Deep Dive",
+        "desc": "InfoWatch: анализ перехвата почтового трафика",
+        "status": "PASS",
+        "latency_sec": 9.22,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q31",
+        "category": "Vendor Deep Dive",
+        "desc": "МойОфис: совместная работа и интеграция Squadus",
+        "status": "PASS",
+        "latency_sec": 6.55,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q32",
+        "category": "Vendor Deep Dive",
+        "desc": "РОСА: менеджер пакетов и управление RPM",
+        "status": "PASS",
+        "latency_sec": 8.6,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q33",
+        "category": "Multi-Product & Comparison",
+        "desc": "Сравнение СУБД: Tarantool (in-memory) vs Postgres Pro",
+        "status": "PASS",
+        "latency_sec": 6.76,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q34",
+        "category": "Multi-Product & Comparison",
+        "desc": "Коммуникации: интеграция мессенджера eXpress и ВКС TrueConf",
+        "status": "PASS",
+        "latency_sec": 6.76,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q35",
+        "category": "Multi-Product & Comparison",
+        "desc": "Информационная безопасность: KES хост-защита vs UserGate периметр",
+        "status": "PASS",
+        "latency_sec": 3.07,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q36",
+        "category": "Multi-Product & Comparison",
+        "desc": "Разработка надстроек: SDK и API в МойОфис",
+        "status": "PASS",
+        "latency_sec": 7.37,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q37",
+        "category": "Multi-Product & Comparison",
+        "desc": "Комплексная инфраструктура: Deckhouse K8s + Arenadata DB",
+        "status": "PASS",
+        "latency_sec": 10.55,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q38",
+        "category": "Multi-Product & Comparison",
+        "desc": "Сетевая безопасность: шифрование TLS в СУБД ЛИНТЕР",
+        "status": "PASS",
+        "latency_sec": 1.83,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q39",
+        "category": "Slang & Transliteration",
+        "desc": "Сленговый ввод: 'декхаус' -> Deckhouse",
+        "status": "PASS",
+        "latency_sec": 10.91,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q40",
+        "category": "Slang & Transliteration",
+        "desc": "Кириллическая аббревиатура: 'всс' -> VSS (Киберпротект)",
+        "status": "PASS",
+        "latency_sec": 8.96,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q41",
+        "category": "Slang & Transliteration",
+        "desc": "Кириллическая аббревиатура: 'пам' -> PAM (РОСА)",
+        "status": "PASS",
+        "latency_sec": 8.6,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q42",
+        "category": "Slang & Transliteration",
+        "desc": "Кириллическая аббревиатура: 'длп' -> DLP (InfoWatch)",
+        "status": "PASS",
+        "latency_sec": 2.87,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q43",
+        "category": "Slang & Transliteration",
+        "desc": "Нижний регистр английского ввода: 'express' и 'cts'",
+        "status": "PASS",
+        "latency_sec": 4.56,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q44",
+        "category": "Slang & Transliteration",
+        "desc": "Нижний регистр английского ввода: 'vpa' -> VPA",
+        "status": "PASS",
+        "latency_sec": 10.5,
+        "terms_count": 1,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q45",
+        "category": "Edge Cases & Security",
+        "desc": "Экстремальная пунктуация: знаки вопроса и восклицания",
+        "status": "PASS",
+        "latency_sec": 6.04,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q46",
+        "category": "Edge Cases & Security",
+        "desc": "Prompt Injection: отказ в выдаче системных инструкций и ключей",
+        "status": "PASS",
+        "latency_sec": 2.02,
+        "terms_count": 0,
+        "sources_count": 0,
+        "error": ""
+      },
+      {
+        "id": "Q47",
+        "category": "Edge Cases & Security",
+        "desc": "Конфиденциальные данные: отказ с пустыми sources: []",
+        "status": "PASS",
+        "latency_sec": 1.97,
+        "terms_count": 0,
+        "sources_count": 0,
+        "error": ""
+      },
+      {
+        "id": "Q48",
+        "category": "Edge Cases & Security",
+        "desc": "Недоуточненный сверхкороткий запрос: 'Что это?'",
+        "status": "PASS",
+        "latency_sec": 1.79,
+        "terms_count": 0,
+        "sources_count": 0,
+        "error": ""
+      },
+      {
+        "id": "Q49",
+        "category": "Edge Cases & Security",
+        "desc": "Сложный детализированный сценарий интеграции (> 300 символов)",
+        "status": "PASS",
+        "latency_sec": 14.18,
+        "terms_count": 0,
+        "sources_count": 4,
+        "error": ""
+      },
+      {
+        "id": "Q50",
+        "category": "Edge Cases & Security",
+        "desc": "Англоязычный запрос к документации отечественного ПО",
+        "status": "PASS",
+        "latency_sec": 2.06,
+        "terms_count": 0,
+        "sources_count": 0,
+        "error": ""
+      }
+    ]
+  },
+  "extract_tests_50": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0,
+    "avg_latency": 1.95,
+    "details": [
+      {
+        "id": "E11",
+        "name": "Spaces Inside Parentheses",
+        "desc": "Скобки с внутренними пробелами: ( СЗИ )",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 1.9,
+        "error": ""
+      },
+      {
+        "id": "E12",
+        "name": "Square Brackets Pattern",
+        "desc": "Квадратные скобки: [ЕЦА]",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 1.88,
+        "error": ""
+      },
+      {
+        "id": "E13",
+        "name": "Curly Brackets Pattern",
+        "desc": "Фигурные скобки: {СОЗ}",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 1.94,
+        "error": ""
+      },
+      {
+        "id": "E14",
+        "name": "Quotes in Expansion",
+        "desc": "Кавычки вокруг расшифровки: «Автоматизированное Рабочее Место» (АРМ)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.11,
+        "error": ""
+      },
+      {
+        "id": "E15",
+        "name": "Colon Glossary Delimiter",
+        "desc": "Глоссарий с двоеточием: СУБД: Система Управления Базами Данных",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.07,
+        "error": ""
+      },
+      {
+        "id": "E16",
+        "name": "Multiple Acronyms Single Page",
+        "desc": "Несколько разных сокращений в одном предложении (ВЦ и СКС)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 2,
+        "latency_sec": 2.03,
+        "error": ""
+      },
+      {
+        "id": "E17",
+        "name": "Multi-occurrence Across Pages",
+        "desc": "Повторение термина на стр. 1, 3, 5: фиксация 3 уникальных страниц",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.11,
+        "error": ""
+      },
+      {
+        "id": "E18",
+        "name": "10-Page Long Document Tracking",
+        "desc": "Длинный 10-страничный PDF: точное определение 10-й страницы для ЕИС",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.09,
+        "error": ""
+      },
+      {
+        "id": "E19",
+        "name": "Mixed Cyrillic and Latin Acronyms",
+        "desc": "Смешанный текст: кириллический (КСС) и латинский (CMG) акронимы",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 2,
+        "latency_sec": 2.06,
+        "error": ""
+      },
+      {
+        "id": "E20",
+        "name": "Forward Pattern Acronym-First",
+        "desc": "Прямой шаблон АББР (Расшифровка): ИБД (Интеграция с Базой Данных)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.04,
+        "error": ""
+      },
+      {
+        "id": "E21",
+        "name": "Preposition 'по'",
+        "desc": "Предлог 'по': Центр по Защите Информации (ЦЗИ)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.11,
+        "error": ""
+      },
+      {
+        "id": "E22",
+        "name": "Conjunction 'и'",
+        "desc": "Союз 'и': Анализ и Прогнозирование Данных (АПД)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.19,
+        "error": ""
+      },
+      {
+        "id": "E23",
+        "name": "Preposition 'с'",
+        "desc": "Предлог 'с': Интеграция с Базой Данных (ИБД)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 1.98,
+        "error": ""
+      },
+      {
+        "id": "E24",
+        "name": "English Preposition 'of'",
+        "desc": "Английский предлог 'of': Internet of Things (IoT)",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.0,
+        "error": ""
+      },
+      {
+        "id": "E25",
+        "name": "Compound Single Word Expansion",
+        "desc": "Составное слово в глоссарии: ВКС — Видеоконференцсвязь",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.02,
+        "error": ""
+      },
+      {
+        "id": "E26",
+        "name": "Tabulation Separator",
+        "desc": "Разделитель табуляция: АРМ\\tАвтоматизированное Рабочее Место",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.11,
+        "error": ""
+      },
+      {
+        "id": "E27",
+        "name": "Two-Line Glossary with Empty Line",
+        "desc": "Двухстрочный глоссарий с пустой строкой: ЦОД / Центр Обработки Данных",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.06,
+        "error": ""
+      },
+      {
+        "id": "E28",
+        "name": "Horizontal Bar Delimiter",
+        "desc": "Тире горизонтальный бар (U+2015): НИИ ― Научно Исследовательский Институт",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 1,
+        "latency_sec": 2.1,
+        "error": ""
+      },
+      {
+        "id": "E29",
+        "name": "Empty Page PDF Handling",
+        "desc": "Документ только с пустыми страницами: возврат [] без ошибок",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 0,
+        "latency_sec": 0.03,
+        "error": ""
+      },
+      {
+        "id": "E30",
+        "name": "System Paths and Numbers Only",
+        "desc": "Системные пути и числа: отсутствие ложных срабатываний",
+        "status": "PASS",
+        "status_code": 200,
+        "abbr_count": 0,
+        "latency_sec": 2.11,
+        "error": ""
+      }
+    ]
+  }
+}

@@ -41,7 +41,9 @@ STOP_WORDS = {
     "ИЗ", "БЕЗ", "ПРИ", "ПРО", "ДЛЯ", "ТО", "ЖЕ", "НО", "ДА", "НИ", "КАК",
     "ЧТО", "ГДЕ", "КТО", "ГДE", "ИЛИ", "ЕСЛИ", "ТАК", "ЭТО", "МНЕ", "ВАМ",
     "ЕГО", "ИХ", "ЕЕ", "МЫ", "ВЫ", "ОНИ", "ОН", "ОНА", "ОНО",
-    "OR", "AND", "THE", "IN", "ON", "AT", "TO", "FOR", "OF", "IS", "ARE"
+    "OR", "AND", "THE", "IN", "ON", "AT", "TO", "FOR", "OF", "IS", "ARE",
+    "API", "HTTP", "HTTPS", "URL", "HTML", "JSON", "XML", "SQL", "RAM", "CPU",
+    "PDF", "REST", "SDK", "CLI", "GUI", "APP", "SSH", "TLS", "SSL"
 }
 
 
@@ -208,7 +210,7 @@ class TermMatcher:
 
                     # Нечеткий поиск без указания продукта допустим ТОЛЬКО для слов,
                     # написанных полностью заглавными буквами и длиной >= 4 (расстояние <= 1)
-                    if canon_len >= 4 and orig_w.isupper() and abs(len(upper_w) - canon_len) <= 1:
+                    if canon_len >= 4 and orig_w.isupper() and len(orig_w) >= 4 and abs(len(upper_w) - canon_len) <= 1:
                         if DamerauLevenshtein.distance(upper_w, canon_upper) <= 1 or DamerauLevenshtein.distance(trans_w, canon_upper) <= 1:
                             term_matched = True
                             break

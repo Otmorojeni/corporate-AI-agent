@@ -22,7 +22,7 @@ STOP_WORDS = {
 # Служебные слова-связки, допустимые внутри расшифровки между начальными буквами
 CONNECTOR_WORDS = {
     "of", "and", "for", "the", "in", "on", "at", "to", "a", "an", "by", "with",
-    "по", "и", "для", "в", "на", "с", "из", "или", "о", "об"
+    "по", "и", "для", "в", "на", "с", "из", "или", "о", "об", "к", "от", "при", "под", "до"
 }
 
 # Заголовки разделов с глоссариями и перечнями сокращений (русский и английский языки)
@@ -52,10 +52,25 @@ GLOSSARY_HEADERS = (
 RE_WORD = re.compile(r"[a-zA-Zа-яА-Я0-9]+")
 RE_SPACES = re.compile(r"\s+")
 RE_DELIM_SPLIT = re.compile(r"[\—\–\-\:\―\‒]")
-RE_BRACKET_ACRONYM = re.compile(r"[\(\[\{]\s*([A-ZА-ЯЁ]{2,10})\s*[\)\]\}]")
-RE_ACRONYM_BRACKET = re.compile(r"\b([A-ZА-ЯЁ]{2,10})\s*[\(\[\{]([^\)\]\}]+)[\)\]\}]")
-RE_GLOSSARY_SINGLE = re.compile(r"^[A-ZА-ЯЁ]{2,10}$")
-RE_GLOSSARY_LINE = re.compile(r"^([A-ZА-ЯЁ]{2,10})(?:\s*[\—\–\-\:\―\‒]\s*|\t+|\s{2,})(.+)$")
+RE_BRACKET_ACRONYM = re.compile(r"[\(\[\{]\s*([A-Za-zА-Яа-яЁё]{2,10})\s*[\)\]\}]")
+RE_ACRONYM_BRACKET = re.compile(r"\b([A-Za-zА-Яа-яЁё]{2,10})\s*[\(\[\{]([^\)\]\}]+)[\)\]\}]")
+RE_GLOSSARY_SINGLE = re.compile(r"^[A-Za-zА-Яа-яЁё]{2,10}$")
+RE_GLOSSARY_LINE = re.compile(r"^([A-Za-zА-Яа-яЁё]{2,10})(?:\s*[\—\–\-\:\―\‒]\s*|\t+|\s{2,})(.+)$")
+
+
+def check_single_word_compound(canon: str, word: str) -> bool:
+    """Проверяет соответствие сложного составного слова (напр. ВКС -> Видеоконференцсвязь)."""
+    canon_lower = canon.lower()
+    w_lower = word.lower()
+    if not w_lower.startswith(canon_lower[0]):
+        return False
+    pos = 0
+    for char in canon_lower:
+        pos = w_lower.find(char, pos)
+        if pos == -1:
+            return False
+        pos += 1
+    return True
 
 
 def parse_glossary_line(line: str) -> Optional[Tuple[str, str]]:
@@ -67,6 +82,8 @@ def parse_glossary_line(line: str) -> Optional[Tuple[str, str]]:
     if not m:
         return None
     canon = m.group(1).strip()
+    if sum(1 for c in canon if c.isupper()) < 2:
+        return None
     rest = m.group(2).strip()
     parts = RE_DELIM_SPLIT.split(rest, maxsplit=1)
     exp_cand = RE_SPACES.sub(" ", parts[0]).strip().strip(" .,;:-—–")
@@ -79,6 +96,8 @@ def parse_glossary_line(line: str) -> Optional[Tuple[str, str]]:
     if letters == canon_upper or (
         len(words) >= 2 and sum(1 for c in canon_upper if c in letters) >= max(2, len(canon) * 0.7)
     ):
+        return (canon, exp_cand)
+    elif len(words) == 1 and len(canon) >= 2 and check_single_word_compound(canon, words[0]):
         return (canon, exp_cand)
     elif len(parts) > 1 and len(words) == len(canon):
         if all(w[0].upper() == c for w, c in zip(words, canon_upper)):
@@ -217,7 +236,7 @@ def parse_glossary_page(text: str) -> List[Tuple[str, str, str]]:
         # 1. Формат: АББР на отдельной строке, следующая строка — расшифровка
         if RE_GLOSSARY_SINGLE.match(line):
             canon = line
-            if i + 1 < len(lines):
+            if sum(1 for c in canon if c.isupper()) >= 2 and i + 1 < len(lines):
                 next_line = lines[i + 1]
                 parts = RE_DELIM_SPLIT.split(next_line, maxsplit=1)
                 exp_cand = RE_SPACES.sub(" ", parts[0]).strip().strip(" .,;:-—–")
@@ -227,6 +246,9 @@ def parse_glossary_page(text: str) -> List[Tuple[str, str, str]]:
                 if letters == canon.upper() or (
                     len(words) >= 2 and sum(1 for c in canon.upper() if c in letters) >= max(2, len(canon) * 0.7)
                 ):
+                    quote = f"{canon}: {next_line}"
+                    results.append((canon, exp_cand, quote))
+                elif len(words) == 1 and len(canon) >= 2 and check_single_word_compound(canon, words[0]):
                     quote = f"{canon}: {next_line}"
                     results.append((canon, exp_cand, quote))
                 elif len(parts) > 1 and len(words) == len(canon):
@@ -257,12 +279,12 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
         text = page.get_text("text")
         if not text:
             continue
-        text = text.replace("\xa0", " ")
+        text = text.replace("\xa0", " ").replace("\x00", "\t")
 
         # 1. Парсинг глоссариев и списков определений (однострочные и двухстрочные форматы)
         glossary_terms = parse_glossary_page(text)
         for canon, exp, quote in glossary_terms:
-            if canon in STOP_WORDS or len(canon) < 2:
+            if canon in STOP_WORDS or len(canon) < 2 or sum(1 for c in canon if c.isupper()) < 2:
                 continue
             found_data.setdefault(canon, {}).setdefault(exp, []).append(
                 AbbreviationOccurrence(page=page_num, quote=quote[:1000])
@@ -271,7 +293,7 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
         # 2. Паттерн: ... Расшифровка (АББР)
         for m in RE_BRACKET_ACRONYM.finditer(text):
             canon = m.group(1).strip()
-            if canon in STOP_WORDS or len(canon) < 2:
+            if canon in STOP_WORDS or len(canon) < 2 or sum(1 for c in canon if c.isupper()) < 2:
                 continue
 
             start_pos = max(0, m.start() - 120)
@@ -289,10 +311,10 @@ def extract_from_pdf_document(doc: pymupdf.Document) -> List[ExtractedAbbreviati
         # 3. Паттерн: АББР (Расшифровка...)
         for m in RE_ACRONYM_BRACKET.finditer(text):
             canon = m.group(1).strip()
-            inside = m.group(2).strip()
-            if canon in STOP_WORDS or len(canon) < 2:
+            if canon in STOP_WORDS or len(canon) < 2 or sum(1 for c in canon if c.isupper()) < 2:
                 continue
 
+            inside = m.group(2).strip()
             exp = extract_expansion_forward(inside, canon)
             if exp:
                 q_start = max(0, m.start() - 40)
