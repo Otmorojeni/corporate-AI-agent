@@ -5,6 +5,10 @@ import json
 from pathlib import Path
 import pymupdf
 
+# Ensure UTF-8 output on Windows consoles
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -437,7 +441,7 @@ EXTRACT_TESTS_50 = [
         "name": "Horizontal Bar Delimiter",
         "pages": ["Список сокращений:\nНИИ ― Научно Исследовательский Институт\nОрганизация разработки."],
         "check": lambda data: any(a["canonical"] == "НИИ" and "Научно Исследовательский Институт" in a["expansion"] for a in data.get("abbreviations", [])),
-        "desc": "Тире горизонтальный бар (U+2015): НИИ ― Научно Исследовательский Институт"
+        "desc": "Тире горизонтальный бар: НИИ - Научно Исследовательский Институт"
     },
 
     # Категория 5: Граничные и негативные проверки (E29-E30)
