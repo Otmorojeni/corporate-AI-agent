@@ -12,8 +12,8 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.core.extractor import extract_abbreviations_from_file
 
-CORPUS_DIR = Path("corpus")
-OUTPUT_FILE = Path("data/terms.jsonl")
+CORPUS_DIR = PROJECT_ROOT / "corpus"
+OUTPUT_FILE = PROJECT_ROOT / "data" / "terms.jsonl"
 
 
 def get_file_sha256(filepath: Path) -> str:
