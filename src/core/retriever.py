@@ -18,6 +18,7 @@ from rank_bm25 import BM25Okapi
 
 from src.schemas import DetectedTerm
 from src.config import settings
+from src.core.matcher import STOP_WORDS
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,23 @@ def tokenize_text(text: str) -> List[str]:
     return [w.lower() for w in RE_TOKEN.findall(text)]
 
 
+def _calculate_term_boost(
+    chunk_text: str,
+    chunk_lower: str,
+    detected_terms: Optional[List[DetectedTerm]],
+) -> float:
+    """Рассчитывает весовой бустинг чанка по точному совпадению терминов и расшифровок."""
+    if not detected_terms:
+        return 0.0
+    boost = 0.0
+    for term in detected_terms:
+        if term.canonical in chunk_text:
+            boost += 3.0
+        if term.expansion.lower() in chunk_lower:
+            boost += 5.0
+    return boost
+
+
 class DocumentRetriever:
     """
     Класс управления RAG-индексами и поиска контекста по базе знаний.
@@ -67,6 +85,7 @@ class DocumentRetriever:
         self.chunks_by_product: Dict[str, List[Dict]] = {}
         self.bm25_by_product: Dict[str, BM25Okapi] = {}
         self.all_chunks: List[Dict] = []
+        self.all_tokenized: List[List[str]] = []
         self.all_bm25: Optional[BM25Okapi] = None
         self._load_and_index()
 
@@ -161,7 +180,7 @@ class DocumentRetriever:
 
         # Мгновенная оптимизированная переиндексация глобального BM25 через кэш токенов
         new_tokenized = [tokenize_text(c["text"]) for c in new_chunks]
-        if not hasattr(self, "all_tokenized") or not self.all_tokenized:
+        if not self.all_tokenized:
             self.all_tokenized = [tokenize_text(c["text"]) for c in self.all_chunks]
         else:
             self.all_tokenized.extend(new_tokenized)
@@ -171,7 +190,6 @@ class DocumentRetriever:
                 self.all_bm25 = BM25Okapi(self.all_tokenized)
             except Exception as e:
                 logger.warning("Failed to build global BM25: %s", e)
-
 
         logger.info(
             "Dynamically indexed %d chunks from '%s' under product '%s' (total chunks now: %d)",
@@ -222,27 +240,15 @@ class DocumentRetriever:
                 chunks = self.chunks_by_product[prod]
                 scores = bm25.get_scores(expanded_words)
 
-                # ОПТИМИЗАЦИЯ: выбираем топ-50 кандидатов по базовому скору BM25 через кучу
-                # вместо дорогого полного прохода по всем чанкам с вызовом .lower()
+                # Выбираем топ-50 кандидатов по базовому скору BM25 через кучу
                 num_candidates = min(50, len(chunks))
                 top_candidates = heapq.nlargest(num_candidates, enumerate(scores), key=lambda x: x[1])
 
                 prod_results: List[Tuple[float, Dict]] = []
                 for idx, base_score in top_candidates:
                     chunk = chunks[idx]
-                    chunk_text = chunk["text"]
-                    chunk_lower = chunk_text.lower()
-
-                    boost = 0.0
-                    if detected_terms:
-                        for term in detected_terms:
-                            if term.canonical in chunk_text:
-                                boost += 3.0
-                            if term.expansion.lower() in chunk_lower:
-                                boost += 5.0
-
-                    final_score = float(base_score) + boost
-                    prod_results.append((final_score, chunk))
+                    boost = _calculate_term_boost(chunk["text"], chunk["text"].lower(), detected_terms)
+                    prod_results.append((float(base_score) + boost, chunk))
 
                 prod_results.sort(key=lambda x: x[0], reverse=True)
 
@@ -260,33 +266,22 @@ class DocumentRetriever:
             # Если продукт не указан:
             if self.all_bm25 and self.all_chunks:
                 if detected_terms:
-                    # 1. Если есть подтвержденные термины (напр. "Что такое DKP?"),
-                    # ищем по всей базе знаний с бустингом терминов
+                    # Поиск по всей базе знаний с бустингом подтвержденных терминов
                     scores = self.all_bm25.get_scores(expanded_words)
                     num_candidates = min(50, len(self.all_chunks))
                     top_candidates = heapq.nlargest(num_candidates, enumerate(scores), key=lambda x: x[1])
                     for idx, score in top_candidates:
                         chunk = self.all_chunks[idx]
-                        chunk_text = chunk["text"]
-                        chunk_lower = chunk_text.lower()
-                        boost = 0.0
-                        for term in detected_terms:
-                            if term.canonical in chunk_text:
-                                boost += 3.0
-                            if term.expansion.lower() in chunk_lower:
-                                boost += 5.0
+                        boost = _calculate_term_boost(chunk["text"], chunk["text"].lower(), detected_terms)
                         results.append((float(score) + boost, chunk))
                 else:
-                    # 2. Если нет ни продуктов, ни аббревиатур:
-                    # Фильтруем стоп-слова и союзы, требуем минимальный порог релевантности
-                    from src.core.matcher import STOP_WORDS
+                    # Общий запрос без продуктов и аббревиатур: фильтруем стоп-слова
                     content_words = [w for w in query_words if len(w) >= 3 and w.upper() not in STOP_WORDS]
                     if content_words:
                         scores = self.all_bm25.get_scores(content_words)
                         num_candidates = min(50, len(self.all_chunks))
                         top_candidates = heapq.nlargest(num_candidates, enumerate(scores), key=lambda x: x[1])
                         for idx, score in top_candidates:
-                            # Порог релевантности: совпадение должно быть существенным
                             if score >= 10.0:
                                 results.append((float(score), self.all_chunks[idx]))
 

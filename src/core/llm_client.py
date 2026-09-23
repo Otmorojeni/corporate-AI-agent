@@ -3,7 +3,7 @@ import asyncio
 import logging
 from typing import List, Dict, Optional
 from openai import AsyncOpenAI
-from src.schemas import DetectedTerm, SourceReference
+from src.schemas import DetectedTerm
 from src.config import settings
 
 logger = logging.getLogger("corporate_agent.llm")
@@ -33,6 +33,19 @@ class LLMClient:
             )
             self._loop = current_loop
         return self._client
+
+    def _format_fallback_response(
+        self,
+        products: List[str],
+        detected_terms: List[DetectedTerm],
+        default_msg: str = "Информация по вашему запросу не найдена в документации.",
+    ) -> str:
+        """Формирует детерминированный ответ по терминам при сбое или пустом ответе LLM."""
+        if not detected_terms:
+            return default_msg
+        prod = products[0] if products else "документации"
+        parts = [f"В контексте {prod} {t.canonical} означает «{t.expansion}»." for t in detected_terms]
+        return " ".join(parts)
 
     def _build_system_prompt(
         self,
@@ -118,19 +131,13 @@ class LLMClient:
                 return content.strip()
             
             # Фоллбэк, если модель вернула пустую строку
-            parts = []
-            for t in detected_terms:
-                prod = products[0] if products else "документации"
-                parts.append(f"В контексте {prod} {t.canonical} означает «{t.expansion}».")
-            return " ".join(parts) if parts else "Информация по вашему запросу не найдена в документации."
+            return self._format_fallback_response(products, detected_terms)
 
         except Exception as e:
             # Отказоустойчивый ответ в случае сетевых проблем провайдера
             logger.warning("LLM request failed: %s. Using deterministic fallback.", e)
-            parts = []
-            for t in detected_terms:
-                prod = products[0] if products else "документации"
-                parts.append(f"В контексте {prod} {t.canonical} означает «{t.expansion}».")
-            if parts:
-                return " ".join(parts)
-            return "Не удалось связаться с сервером инференса документации. Пожалуйста, повторите запрос позже."
+            return self._format_fallback_response(
+                products,
+                detected_terms,
+                default_msg="Не удалось связаться с сервером инференса документации. Пожалуйста, повторите запрос позже.",
+            )

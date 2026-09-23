@@ -11,7 +11,6 @@ import json
 import re
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
-from rapidfuzz import fuzz
 from rapidfuzz.distance import DamerauLevenshtein
 
 from src.schemas import DetectedTerm, ExtractedAbbreviation
@@ -57,6 +56,51 @@ def transliterate_acronym(text: str) -> str:
     if upper in CUSTOM_TRANSLIT:
         return CUSTOM_TRANSLIT[upper]
     return "".join(RU_TO_EN_MAP.get(ch, ch) for ch in upper)
+
+
+def _is_candidate_match(
+    orig_w: str,
+    upper_w: str,
+    trans_w: str,
+    canon_upper: str,
+    has_product_context: bool = False,
+) -> bool:
+    """
+    Проверяет соответствие слова-кандидата канонической аббревиатуре:
+    1. Точное совпадение (включая транслитерацию).
+    2. Перестановка символов (транспозиция) при наличии продуктового контекста.
+    3. Опечатка на 1 символ (Damerau-Levenshtein <= 1) для акронимов длиной >= 4.
+    """
+    # 1. Точное совпадение
+    if upper_w == canon_upper or trans_w == canon_upper:
+        return True
+
+    canon_len = len(canon_upper)
+
+    # 2. Транспозиция символов в рамках продуктового контекста (VAP -> VPA, SNPM -> SNMP)
+    if has_product_context and len(upper_w) == canon_len and (orig_w.isupper() or len(orig_w) >= 3):
+        if sorted(upper_w) == sorted(canon_upper) or sorted(trans_w) == sorted(canon_upper):
+            if (
+                DamerauLevenshtein.distance(upper_w, canon_upper) <= 1
+                or DamerauLevenshtein.distance(trans_w, canon_upper) <= 1
+            ):
+                return True
+
+    # 3. Допуск 1 опечатки (Damerau-Levenshtein <= 1) для акронимов длиной >= 4
+    if canon_len >= 4 and abs(len(upper_w) - canon_len) <= 1:
+        is_eligible = (
+            (orig_w.isupper() or len(orig_w) >= 4)
+            if has_product_context
+            else (orig_w.isupper() and len(orig_w) >= 4)
+        )
+        if is_eligible:
+            if (
+                DamerauLevenshtein.distance(upper_w, canon_upper) <= 1
+                or DamerauLevenshtein.distance(trans_w, canon_upper) <= 1
+            ):
+                return True
+
+    return False
 
 
 class TermMatcher:
@@ -158,41 +202,19 @@ class TermMatcher:
                 prod_terms = self.terms_by_product.get(prod, [])
                 terms_by_canon: Dict[str, List[Dict]] = {}
                 for entry in prod_terms:
-                    canon_upper = entry["canonical"].upper()
-                    terms_by_canon.setdefault(canon_upper, []).append(entry)
+                    terms_by_canon.setdefault(entry["canonical"].upper(), []).append(entry)
 
                 for canon_upper, entries in terms_by_canon.items():
-                    term_matched = False
-                    canon_len = len(canon_upper)
-
-                    for orig_w, upper_w, trans_w in word_candidates:
-                        # Точное совпадение (включая транслитерацию)
-                        if upper_w == canon_upper or trans_w == canon_upper:
-                            term_matched = True
-                            break
-
-                        # Перестановка соседних символов (transposition: VAP -> VPA, SNPM -> SNMP)
-                        if len(upper_w) == canon_len and (orig_w.isupper() or len(orig_w) >= 3):
-                            if sorted(upper_w) == sorted(canon_upper) or sorted(trans_w) == sorted(canon_upper):
-                                if DamerauLevenshtein.distance(upper_w, canon_upper) <= 1 or DamerauLevenshtein.distance(trans_w, canon_upper) <= 1:
-                                    term_matched = True
-                                    break
-
-                        # Опечатка на 1 символ (расстояние Дамерау-Левенштейна <= 1) для аббревиатур длиной >= 4
-                        if canon_len >= 4 and abs(len(upper_w) - canon_len) <= 1:
-                            if orig_w.isupper() or len(orig_w) >= 4:
-                                if DamerauLevenshtein.distance(upper_w, canon_upper) <= 1 or DamerauLevenshtein.distance(trans_w, canon_upper) <= 1:
-                                    term_matched = True
-                                    break
-
+                    term_matched = any(
+                        _is_candidate_match(orig, up, tr, canon_upper, has_product_context=True)
+                        for orig, up, tr in word_candidates
+                    )
                     if term_matched and entries:
-                        best_entry = entries[0]
-                        canon = best_entry["canonical"]
-                        exp = best_entry["expansion"]
-                        pair = (canon, exp)
+                        best = entries[0]
+                        pair = (best["canonical"], best["expansion"])
                         if pair not in seen_pairs:
                             seen_pairs.add(pair)
-                            matched_terms.append(DetectedTerm(canonical=canon, expansion=exp))
+                            matched_terms.append(DetectedTerm(canonical=best["canonical"], expansion=best["expansion"]))
 
         # 2. Поиск по общему каноническому индексу:
         # Для слов запроса, которые еще не были сопоставлены в шаге 1 (или если продукт не был указан).
@@ -206,30 +228,16 @@ class TermMatcher:
             for canon_upper, entries in self.canonical_index.items():
                 if canon_upper in matched_canons:
                     continue
-                term_matched = False
-                canon_len = len(canon_upper)
-
-                for orig_w, upper_w, trans_w in remaining_candidates:
-                    # Точное совпадение
-                    if upper_w == canon_upper or trans_w == canon_upper:
-                        term_matched = True
-                        break
-
-                    # Нечеткий поиск без указания продукта допустим ТОЛЬКО для слов,
-                    # написанных полностью заглавными буквами и длиной >= 4 (расстояние <= 1)
-                    if canon_len >= 4 and orig_w.isupper() and len(orig_w) >= 4 and abs(len(upper_w) - canon_len) <= 1:
-                        if DamerauLevenshtein.distance(upper_w, canon_upper) <= 1 or DamerauLevenshtein.distance(trans_w, canon_upper) <= 1:
-                            term_matched = True
-                            break
-
+                term_matched = any(
+                    _is_candidate_match(orig, up, tr, canon_upper, has_product_context=False)
+                    for orig, up, tr in remaining_candidates
+                )
                 if term_matched and entries:
-                    best_entry = entries[0]
-                    canon = best_entry["canonical"]
-                    exp = best_entry["expansion"]
-                    pair = (canon, exp)
+                    best = entries[0]
+                    pair = (best["canonical"], best["expansion"])
                     if pair not in seen_pairs:
                         seen_pairs.add(pair)
-                        matched_terms.append(DetectedTerm(canonical=canon, expansion=exp))
+                        matched_terms.append(DetectedTerm(canonical=best["canonical"], expansion=best["expansion"]))
 
         # Ограничение openapi.yaml: не более 16 терминов
         return matched_terms[:16]

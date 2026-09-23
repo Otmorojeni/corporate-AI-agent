@@ -10,7 +10,7 @@
 
 import time
 import logging
-from typing import List, Set
+from typing import List, Set, Tuple
 
 from src.schemas import (
     AssistantQueryRequest,
@@ -25,7 +25,33 @@ from src.core.llm_client import LLMClient
 
 logger = logging.getLogger("corporate_agent.pipeline")
 
-# Синглтоны компонентов для мгновенной обработки запросов без повторной инициализации
+# Маркеры отказа модели или отсутствия сведений в базе знаний
+REFUSAL_MARKERS = (
+    "только на вопросы",
+    "только по",
+    "только с вопросами",
+    "корпоративный ассистент",
+    "не относится",
+    "не найдена",
+    "не удалось найти",
+    "уточните ваш вопрос",
+    "уточнив его связь",
+    "повтори свой вопрос",
+    "не могу предоставить",
+    "не могу подсказать",
+    "не содержит сведений",
+    "не содержит информации",
+    "не имею доступа",
+    "обратитесь к администратору",
+)
+
+# Ключевые слова запросов конфиденциальных данных и системных инструкций
+SECURITY_KEYWORDS = (
+    "парол", "токен", "secret", "password", "token", "ключ доступа",
+    "системный промпт", "промпт", "prompt", "секрет", "зарплат", "инструкци"
+)
+
+# Синглтоны компонентов для быстрой обработки запросов без повторной инициализации
 matcher = TermMatcher()
 retriever = DocumentRetriever()
 llm_client = LLMClient()
@@ -71,7 +97,7 @@ async def process_user_query(req: AssistantQueryRequest) -> AssistantQueryRespon
 
     # Сбор уникальных источников строго по openapi.yaml
     sources: List[SourceReference] = []
-    seen_sources: Set[tuple] = set()
+    seen_sources: Set[Tuple[str, int]] = set()
     for c in context_chunks:
         doc_id = c.get("document_id")
         page_num = c.get("page")
@@ -106,34 +132,14 @@ async def process_user_query(req: AssistantQueryRequest) -> AssistantQueryRespon
     )
 
     # 5. Проверка на off-topic или отказ:
-    # Если в вопросе не было ни продуктов, ни аббревиатур, или запрос касается конфиденциальных данных (пароли, токены),
-    # или модель сообщает об отказе / отсутствии сведений, мы не возвращаем посторонние источники
+    # При отказе или запросе конфиденциальных данных источники принудительно обнуляются по спецификации
     answer_lower = answer.lower()
     query_lower = query.lower()
 
-    is_refusal_text = (
-        "только на вопросы" in answer_lower
-        or "только по" in answer_lower
-        or "только с вопросами" in answer_lower
-        or "корпоративный ассистент" in answer_lower
-        or "не относится" in answer_lower
-        or "не найдена" in answer_lower
-        or "не удалось найти" in answer_lower
-        or "уточните ваш вопрос" in answer_lower
-        or "уточнив его связь" in answer_lower
-        or "повтори свой вопрос" in answer_lower
-        or "не могу предоставить" in answer_lower
-        or "не могу подсказать" in answer_lower
-        or "не содержит сведений" in answer_lower
-        or "не содержит информации" in answer_lower
-        or "не имею доступа" in answer_lower
-        or "обратитесь к администратору" in answer_lower
-    )
-    is_security_or_credential_query = any(
-        kw in query_lower for kw in ("парол", "токен", "secret", "password", "token", "ключ доступа", "системный промпт", "промпт", "prompt", "секрет", "зарплат", "инструкци")
-    )
+    is_refusal_text = any(marker in answer_lower for marker in REFUSAL_MARKERS)
+    is_security_query = any(kw in query_lower for kw in SECURITY_KEYWORDS)
 
-    if is_security_or_credential_query:
+    if is_security_query:
         sources = []
         detected_terms = []
     elif is_refusal_text or (not detected_terms and not products):

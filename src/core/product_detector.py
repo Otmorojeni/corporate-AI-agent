@@ -5,7 +5,8 @@
 """
 
 import re
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Set
+from rapidfuzz.distance import DamerauLevenshtein
 
 # 17 официальных продуктовых семейств и их ключевые синонимы/словоформы
 PRODUCT_PATTERNS: Dict[str, List[str]] = {
@@ -106,14 +107,12 @@ def detect_products(query: str) -> List[str]:
     Возвращает список идентификаторов продуктов в порядке их появления в тексте.
     Устойчив к опечаткам в названиях продуктов (eXpres, Kaspersk, Deckhous, Tarantol).
     """
-    from rapidfuzz.distance import DamerauLevenshtein
-
-    matched_positions = []
-    seen_products = set()
+    matched_positions: List[Tuple[int, str]] = []
+    seen_products: Set[str] = set()
 
     # 1. Быстрый поиск по регулярным выражениям
     for product, regex_list in COMPILED_PATTERNS.items():
-        first_pos = None
+        first_pos: Optional[int] = None
         for r in regex_list:
             match = r.search(query)
             if match:
@@ -125,8 +124,7 @@ def detect_products(query: str) -> List[str]:
             seen_products.add(product)
 
     # 2. Нечеткий поиск опечаток в названиях продуктов (расстояние Дамерау-Левенштейна <= 1)
-    words = RE_PROD_WORD.finditer(query)
-    for m in words:
+    for m in RE_PROD_WORD.finditer(query):
         w = m.group().lower()
         if len(w) >= 5:
             for name, prod in PRIMARY_PRODUCT_NAMES.items():
@@ -156,8 +154,8 @@ def register_dynamic_product(product_name: str) -> None:
     escaped_norm = re.escape(norm)
     patterns.append(rf"\b{escaped_norm}\b")
 
-    # Вариант с заменой дефисов/подчеркиваний на пробелы или дефисы
-    flexible_norm = re.sub(r"[-_]+", r"[\\s_\\-]+", escaped_norm)
+    # Вариант с гибкими разделителями (пробел, дефис, подчеркивание)
+    flexible_norm = re.sub(r"[-_]+", lambda _: r"[\s_\-]+", escaped_norm)
     if flexible_norm != escaped_norm:
         patterns.append(rf"\b{flexible_norm}\b")
 
@@ -165,7 +163,8 @@ def register_dynamic_product(product_name: str) -> None:
     clean_norm = re.sub(r"^(doc|guide|manual|инструкция|регламент)[-_]+", "", norm)
     if clean_norm and clean_norm != norm:
         clean_escaped = re.escape(clean_norm)
-        patterns.append(rf"\b{re.sub(r'[-_]+', r'[\\s_\\-]+', clean_escaped)}\b")
+        clean_flexible = re.sub(r"[-_]+", lambda _: r"[\s_\-]+", clean_escaped)
+        patterns.append(rf"\b{clean_flexible}\b")
         if len(clean_norm) >= 4:
             PRIMARY_PRODUCT_NAMES[clean_norm] = norm
 
