@@ -16,7 +16,9 @@ from src.schemas import AbbreviationOccurrence, ExtractedAbbreviation
 STOP_WORDS = {
     "PDF", "HTTP", "HTTPS", "URL", "HTML", "JSON", "XML", "API", "REST", "SQL",
     "IEEE", "RFC", "TCP", "UDP", "IP", "DNS", "SSH", "TLS", "SSL", "OS", "ОС",
-    "CPU", "RAM", "GB", "MB", "KB", "ГБ", "МБ", "КБ"
+    "CPU", "RAM", "GB", "MB", "KB", "ГБ", "МБ", "КБ",
+    # Имена продуктов и их части (по указанию кейсодержателя не подлежат расшифровке)
+    "DB", "РЕД", "RED", "ВИРТ", "VIRT", "РОСА", "ROSA", "ЛИНТЕР", "LINTER", "PRO", "БД"
 }
 
 # Служебные слова-связки, допустимые внутри расшифровки между начальными буквами

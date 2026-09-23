@@ -46,7 +46,7 @@ PRODUCT_PATTERNS: Dict[str, List[str]] = {
         r"ред\s*баз[а-я]*\s*данных", r"red\s*database", r"\brdb\b", r"ред\s*бд"
     ],
     "red_virtualization": [
-        r"ред\s*виртуализац[а-я]*", r"red\s*virtualization", r"редвирт[а-я]*"
+        r"ред\s*виртуализац[а-я]*", r"red\s*virtualization", r"ред\s*вирт[а-я]*"
     ],
     "rosa": [
         r"рос[а-я]\b", r"\brosa\b", r"rosa\s*linux", r"роса\s*линукс", r"роса\s*хром", r"роса\s*барий"

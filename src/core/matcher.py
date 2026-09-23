@@ -43,7 +43,9 @@ STOP_WORDS = {
     "ЕГО", "ИХ", "ЕЕ", "МЫ", "ВЫ", "ОНИ", "ОН", "ОНА", "ОНО",
     "OR", "AND", "THE", "IN", "ON", "AT", "TO", "FOR", "OF", "IS", "ARE",
     "API", "HTTP", "HTTPS", "URL", "HTML", "JSON", "XML", "SQL", "RAM", "CPU",
-    "PDF", "REST", "SDK", "CLI", "GUI", "APP", "SSH", "TLS", "SSL"
+    "PDF", "REST", "SDK", "CLI", "GUI", "APP", "SSH", "TLS", "SSL",
+    # Имена продуктов и их части (по указанию кейсодержателя не подлежат расшифровке)
+    "DB", "РЕД", "RED", "ВИРТ", "VIRT", "ОС", "OS", "РОСА", "ROSA", "ЛИНТЕР", "LINTER", "PRO", "БД"
 }
 
 
