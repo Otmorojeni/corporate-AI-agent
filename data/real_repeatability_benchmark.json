@@ -1,0 +1,303 @@
+[
+  {
+    "case_id": "Case-01",
+    "query": "Как в документации eXpress расшифровывается CTS?",
+    "expected_abbrs": [
+      "CTS"
+    ],
+    "latencies": [
+      2.374536299990723,
+      1.0896346000081394,
+      0.9391239999968093
+    ],
+    "avg_latency": 1.467764966665224,
+    "terms_identical": true,
+    "exact_string_match": true,
+    "avg_text_similarity": 1.0,
+    "avg_word_jaccard": 1.0,
+    "runs": [
+      {
+        "run": 1,
+        "elapsed": 2.374536299990723,
+        "answer": "В контексте eXpress CTS означает «Corporate Transport Server».",
+        "detected_terms": [
+          {
+            "canonical": "CTS",
+            "expansion": "Corporate Transport Server"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 2,
+        "elapsed": 1.0896346000081394,
+        "answer": "В контексте eXpress CTS означает «Corporate Transport Server».",
+        "detected_terms": [
+          {
+            "canonical": "CTS",
+            "expansion": "Corporate Transport Server"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 3,
+        "elapsed": 0.9391239999968093,
+        "answer": "В контексте eXpress CTS означает «Corporate Transport Server».",
+        "detected_terms": [
+          {
+            "canonical": "CTS",
+            "expansion": "Corporate Transport Server"
+          }
+        ],
+        "sources_count": 4
+      }
+    ]
+  },
+  {
+    "case_id": "Case-02",
+    "query": "Что требуется установить на защищаемом компьютере перед добавлением поддержки SNMP в Kaspersky Embedded Systems Security?",
+    "expected_abbrs": [
+      "SNMP"
+    ],
+    "latencies": [
+      1.9810264999978244,
+      2.339426699996693,
+      1.8873764000018127
+    ],
+    "avg_latency": 2.06927653333211,
+    "terms_identical": true,
+    "exact_string_match": false,
+    "avg_text_similarity": 0.9971014492753624,
+    "avg_word_jaccard": 1.0,
+    "runs": [
+      {
+        "run": 1,
+        "elapsed": 1.9810264999978244,
+        "answer": "В контексте Kaspersky SNMP означает «Simple Network Management Protocol».\nПеред добавлением поддержки SNMP в Kaspersky Embedded Systems Security необходимо предварительно установить на защищаемом компьютере службу Microsoft SNMP.",
+        "detected_terms": [
+          {
+            "canonical": "SNMP",
+            "expansion": "Simple Network Management Protocol"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 2,
+        "elapsed": 2.339426699996693,
+        "answer": "В контексте Kaspersky SNMP означает «Simple Network Management Protocol». \n\nПеред добавлением поддержки SNMP в Kaspersky Embedded Systems Security необходимо предварительно установить на защищаемом компьютере службу Microsoft SNMP.",
+        "detected_terms": [
+          {
+            "canonical": "SNMP",
+            "expansion": "Simple Network Management Protocol"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 3,
+        "elapsed": 1.8873764000018127,
+        "answer": "В контексте Kaspersky SNMP означает «Simple Network Management Protocol».\nПеред добавлением поддержки SNMP в Kaspersky Embedded Systems Security необходимо предварительно установить на защищаемом компьютере службу Microsoft SNMP.",
+        "detected_terms": [
+          {
+            "canonical": "SNMP",
+            "expansion": "Simple Network Management Protocol"
+          }
+        ],
+        "sources_count": 4
+      }
+    ]
+  },
+  {
+    "case_id": "Case-03",
+    "query": "Как DKP обрабатывает первое обращение к защищённому ресурсу уже аутентифицированного пользователя и пользователя с единственным внешним провайдером?",
+    "expected_abbrs": [
+      "DKP"
+    ],
+    "latencies": [
+      2.0224626999988686,
+      2.292579900007695,
+      2.55654200000572
+    ],
+    "avg_latency": 2.2905282000040947,
+    "terms_identical": true,
+    "exact_string_match": false,
+    "avg_text_similarity": 0.6314145470771977,
+    "avg_word_jaccard": 0.6601307189542484,
+    "runs": [
+      {
+        "run": 1,
+        "elapsed": 2.0224626999988686,
+        "answer": "В контексте Deckhouse DKP означает «Deckhouse Kubernetes Platform».\n\nЕсли пользователь уже аутентифицирован, запрос перенаправляется обратно к исходному ресурсу с данными аутентификации. Если настроен единственный внешний провайдер, пользователь сразу попадает на страницу аутентификации этого провайдера.",
+        "detected_terms": [
+          {
+            "canonical": "DKP",
+            "expansion": "Deckhouse Kubernetes Platform"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 2,
+        "elapsed": 2.292579900007695,
+        "answer": "В контексте Deckhouse DKP означает «Deckhouse Kubernetes Platform».\n\nЕсли пользователь уже аутентифицирован, запрос перенаправляется обратно к исходному ресурсу с данными аутентификации. Если настроен единственный внешний провайдер, пользователь сразу попадает на страницу аутентификации этого провайдера.",
+        "detected_terms": [
+          {
+            "canonical": "DKP",
+            "expansion": "Deckhouse Kubernetes Platform"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 3,
+        "elapsed": 2.55654200000572,
+        "answer": "В контексте Deckhouse DKP означает «Deckhouse Kubernetes Platform».\n\nЕсли пользователь уже прошел аутентификацию (например, во внешнем провайдере аутентификации), то DKP перенаправляет запрос обратно к ресурсу, к которому первоначально обращался пользователь, обогатив запрос данными аутентификации.\n\nЕсли в DKP настроен только один внешний провайдер аутентификации, то пользователь сразу попадает на страницу аутентификации этого провайдера.",
+        "detected_terms": [
+          {
+            "canonical": "DKP",
+            "expansion": "Deckhouse Kubernetes Platform"
+          }
+        ],
+        "sources_count": 4
+      }
+    ]
+  },
+  {
+    "case_id": "Case-04",
+    "query": "В Deckhouse несколько сервисов NLB должны использовать общий адрес, а VPA — подбирать ресурсы контейнера. Как настроить общий адрес и почему лимиты не изменятся автоматически?",
+    "expected_abbrs": [
+      "NLB",
+      "VPA"
+    ],
+    "latencies": [
+      8.37184989999514,
+      8.918520300008822,
+      9.80443380001816
+    ],
+    "avg_latency": 9.031601333340708,
+    "terms_identical": true,
+    "exact_string_match": false,
+    "avg_text_similarity": 0.8091957241636001,
+    "avg_word_jaccard": 0.755627094906417,
+    "runs": [
+      {
+        "run": 1,
+        "elapsed": 8.37184989999514,
+        "answer": "В контексте Deckhouse NLB означает «Network Load Balancer», а VPA — «Vertical Pod Autoscaler».\n\n## Настройка общего IP-адреса для нескольких сервисов NLB:\nДобавьте к сервисам аннотацию `network.deckhouse.io/load-balancer-shared-ip-key` со значением ключа, который будет общим для всех этих сервисов:\n```yaml\napiVersion: v1\nkind: Service\nmetadata:\n  name: service-name\n  namespace: default\n  annotations:\n    network.deckhouse.io/load-balancer-shared-ip-key: \"shared-ip-key-value\"\nspec:\n  type: LoadBalancer\n```\n\n## Почему лимиты ресурсов не изменяются автоматически?\nПо умолчанию VPA управляет только запросами ресурсов (`requests`), но не лимитами (`limits`). Лимиты остаются неизменными, если явно не указать политику управления ими. \n\nПример политики VPA с управлением лимитами:\n```yaml\napiVersion: autoscaling.k8s.io/v1\nkind: VerticalPodAutoscaler\nmetadata:\n  name: example-vpa\nspec:\n  targetRef:\n    apiVersion: apps/v1\n    kind: Deployment\n    name: example-deployment\n  updatePolicy:\n    updateMode: \"Auto\" # Автоматическое обновление ресурсов\n  resourcePolicy:\n    containerPolicies:\n      - containerName: \"*\"\n        mode: Both # Управление и запросами, и лимитами\n```\n\nТаким образом, для изменения лимитов необходимо явно включить режим управления ими в спецификации VPA.",
+        "detected_terms": [
+          {
+            "canonical": "NLB",
+            "expansion": "Network Load Balancer"
+          },
+          {
+            "canonical": "VPA",
+            "expansion": "Vertical Pod Autoscaler"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 2,
+        "elapsed": 8.918520300008822,
+        "answer": "В контексте Deckhouse NLB означает «Network Load Balancer», а VPA — «Vertical Pod Autoscaler».\n\n### Настройка общего IP-адреса для нескольких сервисов NLB:\nДобавьте к сервисам аннотацию `network.deckhouse.io/load-balancer-shared-ip-key` со значением ключа, который определяет общий IP:\n```yaml\napiVersion: v1\nkind: Service\nmetadata:\n  name: service-name\n  namespace: default\n  annotations:\n    network.deckhouse.io/load-balancer-shared-ip-key: \"shared-ip-key-value\"\nspec:\n  type: LoadBalancer\n```\n\n### Почему лимиты ресурсов не изменяются автоматически?\nПо умолчанию VPA управляет только запросами ресурсов (`requests`), но не лимитами (`limits`). Лимиты остаются неизменными, если явно не указать политику управления ими. \n\nПример политики VPA с управлением лимитами:\n```yaml\napiVersion: autoscaling.k8s.io/v1\nkind: VerticalPodAutoscaler\nmetadata:\n  name: example-vpa\nspec:\n  targetRef:\n    apiVersion: apps/v1\n    kind: Deployment\n    name: example-deployment\n  updatePolicy:\n    updateMode: \"Auto\" # Автоматическое обновление ресурсов\n  resourcePolicy:\n    containerPolicies:\n    - containerName: '*'\n      controlledResources: [\"cpu\", \"memory\"] # Управляемые ресурсы\n      mode: \"Auto\" # Включено автоматическое изменение лимитов\n```\n\nТаким образом, для изменения лимитов необходимо явно включить соответствующую политику в спецификации VPA.",
+        "detected_terms": [
+          {
+            "canonical": "NLB",
+            "expansion": "Network Load Balancer"
+          },
+          {
+            "canonical": "VPA",
+            "expansion": "Vertical Pod Autoscaler"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 3,
+        "elapsed": 9.80443380001816,
+        "answer": "В контексте Deckhouse NLB означает «Network Load Balancer», а VPA — «Vertical Pod Autoscaler».\n\n### Настройка общего IP-адреса для нескольких сервисов NLB:\nДобавьте к сервисам аннотацию `network.deckhouse.io/load-balancer-shared-ip-key` со значением ключа, который определяет общий IP:\n```yaml\napiVersion: v1\nkind: Service\nmetadata:\n  name: service-name\n  namespace: default\n  annotations:\n    network.deckhouse.io/load-balancer-shared-ip-key: \"shared-ip-key-value\"\nspec:\n  type: LoadBalancer\n```\nВсе сервисы с одной аннотацией будут использовать один и тот же IP.\n\n### Почему лимиты ресурсов не изменяются автоматически?\nПо умолчанию VPA управляет только запросами ресурсов (`requests`), но не лимитами (`limits`). Лимиты остаются неизменными, если явно не включить управление ими в политике VPA. \n\nПример политики VPA с управлением лимитами:\n```yaml\napiVersion: autoscaling.k8s.io/v1\nkind: VerticalPodAutoscaler\nmetadata:\n  name: example-vpa\nspec:\n  targetRef:\n    apiVersion: apps/v1\n    kind: Deployment\n    name: example-deployment\n  updatePolicy:\n    updateMode: \"Auto\" # Автоматическое обновление ресурсов\n  resourcePolicy:\n    containerPolicies:\n      - containerName: '*'\n        mode: \"Auto\"\n        minAllowed:\n          memory: 100Mi\n          cpu: 100m\n        maxAllowed:\n          memory: 500Mi\n          cpu: 500m\n```\n\nТаким образом, для изменения лимитов необходимо явно указать политику VPA с включённым режимом управления лимитами.",
+        "detected_terms": [
+          {
+            "canonical": "NLB",
+            "expansion": "Network Load Balancer"
+          },
+          {
+            "canonical": "VPA",
+            "expansion": "Vertical Pod Autoscaler"
+          }
+        ],
+        "sources_count": 4
+      }
+    ]
+  },
+  {
+    "case_id": "Case-05",
+    "query": "Как в ЛИНТЕР загрузить реплицируемые данные с ненулевым WAL, а в Tarantool восстановить данные после потери памяти с помощью WAL?",
+    "expected_abbrs": [
+      "WAL",
+      "WAL"
+    ],
+    "latencies": [
+      5.986281399993459,
+      10.403876100026537,
+      11.129466199985472
+    ],
+    "avg_latency": 9.173207900001822,
+    "terms_identical": true,
+    "exact_string_match": false,
+    "avg_text_similarity": 0.3293029384982734,
+    "avg_word_jaccard": 0.32161602132592604,
+    "runs": [
+      {
+        "run": 1,
+        "elapsed": 5.986281399993459,
+        "answer": "В контексте ЛИНТЕР WAL означает «Write Access Level». \nЧтобы загрузить реплицируемые данные с ненулевым WAL в ЛИНТЕР, необходимо указать ключ -ux при запуске сервера репликации. Ключ -ux определяет имя и пароль пользователя, имеющего достаточные права для внесения записей с ненулевыми уровнями доступа (RAL/WAL). Пример команды:\n```\nlreplserver -u SYSTEM/MANAGER8 -us SYSTEM/MANAGER8 -ux SYSTEM/MANAGER8 -s RDSTG\n```\n\nВ контексте Tarantool WAL означает «write ahead log». \nПосле потери оперативной памяти Tarantool восстанавливает данные путем повторного выполнения запросов из файлов журнала WAL. Процесс восстановления включает чтение всех WAL-файлов и выполнение записанных операций. Чтобы ускорить процесс, можно предварительно загрузить последнюю контрольную точку (snapshot), а затем применить только те WAL-файлы, которые появились позже создания последней контрольной точки. Это уменьшает объем обрабатываемых данных и ускоряет восстановление состояния базы.",
+        "detected_terms": [
+          {
+            "canonical": "WAL",
+            "expansion": "Write Access Level"
+          },
+          {
+            "canonical": "WAL",
+            "expansion": "write ahead log"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 2,
+        "elapsed": 10.403876100026537,
+        "answer": "В контексте ЛИНТЕР WAL означает «Write Access Level».  \nВ контексте Tarantool WAL означает «write ahead log».\n\n### Загрузка реплицируемых данных с ненулевым WAL в ЛИНТЕР:\nЧтобы загрузить данные с ненулевыми уровнями доступа (RAL/WAL), необходимо указать специальный ключ `-ux` при запуске сервера репликации (`lreplserver`), указав учетные данные пользователя, имеющего достаточные права доступа:\n```\nlreplserver -u SYSTEM/MANAGER8 -us SYSTEM/MANAGER8 -ux SYSTEM/MANAGER8 -s RDSTG\n```\nПользователь, указанный ключом `-ux`, должен обладать уровнем чтения (RAL) большим или равным максимальному значению RAL реплицируемых данных и уровнем записи (WAL) меньшим или равным минимальному значению WAL этих данных.\n\n### Восстановление данных после потери памяти с помощью WAL в Tarantool:\nПосле инцидента (потери питания или аварийного завершения процесса), когда оперативная память потеряна, Tarantool восстанавливает состояние базы данных следующим образом:\n1. Запускается процесс восстановления (recovery): Tarantool читает все файлы журнала изменений (WAL).\n2. Повторяются операции, записанные в файлах WAL, восстанавливая актуальное состояние базы.\n   \nМожно ускорить этот процесс, предварительно создав контрольную точку (snapshot) командой:\n```python\nbox.snapshot()\n```\nПри восстановлении сначала загружается последняя доступная контрольная точка, а затем применяются только те изменения из журналов WAL, что произошли позже создания контрольной точки. Это значительно сокращает время восстановления больших объемов данных.",
+        "detected_terms": [
+          {
+            "canonical": "WAL",
+            "expansion": "Write Access Level"
+          },
+          {
+            "canonical": "WAL",
+            "expansion": "write ahead log"
+          }
+        ],
+        "sources_count": 4
+      },
+      {
+        "run": 3,
+        "elapsed": 11.129466199985472,
+        "answer": "В контексте ЛИНТЕР WAL означает «Write Access Level». \nВ контексте Tarantool WAL означает «write ahead log».\n\n### Загрузка реплицируемых данных с ненулевым WAL в ЛИНТЕР:\nЧтобы загрузить реплицируемые данные с ненулевыми уровнями доступа (RAL/WAL) в ЛИНТЕР, необходимо указать специальный ключ при запуске сервера репликации:\n```bash\nlreplserver -u SYSTEM/MANAGER8 -us SYSTEM/MANAGER8 -ux SYSTEM/MANAGER8 -s RDSTG\n```\nЗдесь:\n- Ключ `-ux` указывает имя и пароль пользователя, который будет загружать данные с ненулевыми значениями RAL/WAL.\n- Пользователь, указанный этим ключом, должен обладать соответствующими правами доступа (его RAL >= максимальному RAL реплицируемых данных, его WAL <= минимальному WAL этих данных).\n\n### Восстановление данных после потери памяти с помощью WAL в Tarantool:\nПосле случайного отключения питания или аварийного завершения работы экземпляра Tarantool, когда потеряны все данные в оперативной памяти, используется механизм восстановления через журнал изменений (WAL):\n1. **Запуск процесса восстановления**: При перезапуске Tarantool автоматически начинает процесс восстановления, читая последние журналы транзакций (WAL-файлы).\n2. **Применение записей из журналов**: Записи из WAL применяются последовательно, восстанавливая состояние базы данных перед сбоем.\n3. **Использование контрольных точек (checkpoints)**: Вместо чтения всех WAL-файлов с момента создания базы, можно использовать последнюю контрольную точку (snapshot), которая представляет собой полную копию состояния базы на определенный момент времени. После загрузки последней контрольной точки Tarantool применит только те WAL-записи, что появились позже контрольной точки.\n   \nТаким образом, для гарантированного восстановления данных рекомендуется периодически создавать контрольные точки командой `box.snapshot()` или настроить автоматическое создание контрольных точек через демон снимков (`snapshot daemon`).",
+        "detected_terms": [
+          {
+            "canonical": "WAL",
+            "expansion": "Write Access Level"
+          },
+          {
+            "canonical": "WAL",
+            "expansion": "write ahead log"
+          }
+        ],
+        "sources_count": 4
+      }
+    ]
+  }
+]
